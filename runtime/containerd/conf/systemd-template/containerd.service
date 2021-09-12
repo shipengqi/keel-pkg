@@ -1,0 +1,31 @@
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target local-fs.target
+
+[Service]
+WorkingDirectory={KEEL_RUNTIME_DATA_HOME}/containerd
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart={KEEL_HOME}/bin/containerd \
+          --config={KEEL_HOME}/cfg/containerd-config.toml
+ExecStop={KEEL_HOME}/bin/crictl rmp -af
+ExecStopPost={KEEL_HOME}/bin/kill-all-workloads.sh -y
+ExecStopPost={KEEL_HOME}/bin/kubelet-umount-action.sh -y
+# Workaround for containerd slow-start after reboot.
+# Remove it when containerd/containerd/issues/5597 solved.
+ExecStopPost=/usr/bin/find {KEEL_RUNTIME_DATA_HOME}/containerd/state/io.containerd.runtime.v2.task -name address -type f -delete
+Type=exec
+Delegate=yes
+KillMode=process
+Restart=always
+RestartSec=5
+LimitNPROC=infinity
+LimitCORE=infinity
+LimitNOFILE=infinity
+OOMScoreAdjust=-999
+# Comment TasksMax if your systemd version does not supports it.
+# Only systemd 226 and above support this version.
+#TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target

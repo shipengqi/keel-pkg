@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: controller
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-controller-manager
+    #- --address=127.0.0.1
+    - --bind-address=127.0.0.1
+    - --authorization-always-allow-paths=[/healthz]
+    - --master=https://{THIS_NODE}:{MASTER_API_SSL_PORT}
+    - --leader-elect=true
+    - --profiling=false
+    - --pod-eviction-timeout=1m0s
+    - --service-account-private-key-file=/etc/kubernetes/ssl/kube-serviceaccount.key
+    - --root-ca-file=/etc/kubernetes/ssl/ca.crt
+    - --v=1
+    - --logtostderr=true
+    - --kubeconfig=/etc/kubernetes/ssl/kube-controller-kubeconfig
+    - --authentication-kubeconfig=/etc/kubernetes/ssl/kube-controller-kubeconfig
+    - --authorization-kubeconfig=/etc/kubernetes/ssl/kube-controller-kubeconfig
+    - --use-service-account-credentials
+    - --pv-recycler-pod-template-filepath-nfs=/etc/kubernetes/cfg/recycler.yaml
+    - --flex-volume-plugin-dir=/tmp/kubernetes/kubelet-plugins/volume/exec/
+    - --feature-gates=TTLAfterFinished=true
+    - --allocate-node-cidrs=true
+    - --cluster-cidr={POD_CIDR}
+    - --node-cidr-mask-size={POD_CIDR_SUBNETLEN}
+    image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KUBE_CONTROLLER_MANAGER}
+    imagePullPolicy: IfNotPresent
+    imagePullSecrets:
+      - name: registrypullsecret
+    securityContext:
+      runAsUser: {K8S_USER_ID}
+      runAsGroup: {K8S_GROUP_ID}
+      fsGroup: {K8S_GROUP_ID}
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10257
+        scheme: HTTPS
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: controller
+    volumeMounts:
+    - mountPath: /etc/kubernetes/ssl
+      name: ssl-certs-path
+      readOnly: true
+    - mountPath: /etc/kubernetes/cfg
+      name: config
+      readOnly: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+  dnsPolicy: ClusterFirst
+  hostNetwork: true
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 30
+  priorityClassName: system-cluster-critical
+  volumes:
+  - hostPath:
+      path: {K8S_HOME}/ssl
+    name: ssl-certs-path
+  - hostPath:
+      path: {K8S_HOME}/cfg/controller-manager
+    name: config

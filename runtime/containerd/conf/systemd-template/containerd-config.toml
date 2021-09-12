@@ -1,0 +1,91 @@
+version = 2
+root = "{KEEL_RUNTIME_DATA_HOME}/containerd/root"
+state = "{KEEL_RUNTIME_DATA_HOME}/containerd/state"
+plugin_dir = ""
+disabled_plugins = ["io.containerd.snapshotter.v1.aufs", "io.containerd.snapshotter.v1.btrfs"]
+required_plugins = ["io.containerd.grpc.v1.cri"]
+oom_score = -999
+
+[grpc]
+  address = "/run/containerd/containerd.sock"
+  uid = 0
+  gid = 0
+
+[ttrpc]
+  address = ""
+  uid = 0
+  gid = 0
+
+[debug]
+  address = ""
+  uid = 0
+  gid = 0
+  level = ""
+
+[metrics]
+  address = ""
+  grpc_histogram = false
+
+[cgroup]
+  path = "/kubereserved.slice"
+
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    disable_tcp_service = true
+    enable_selinux = false
+    sandbox_image = "{DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_PAUSE}"
+    enable_tls_streaming = false
+    max_container_log_line_size = 16384
+    disable_cgroup = false
+    disable_apparmor = false
+    restrict_oom_score_adj = false
+    max_concurrent_downloads = 3
+    disable_proc_mount = false
+    unset_seccomp_profile = ""
+    tolerate_missing_hugetlb_controller = false
+    disable_hugetlb_controller = false
+    ignore_image_defined_volumes = false
+    netns_mounts_under_state_dir = false
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      snapshotter = "{SNAPSHOTTER}"
+      default_runtime_name = "runc"
+      disable_snapshot_annotations = false
+      discard_unpacked_layers = false
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+          runtime_type = "io.containerd.runc.v2"
+          privileged_without_host_devices = false
+          base_runtime_spec = ""
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+            BinaryName = "runc"
+            NoPivotRoot = false
+            NoNewKeyring = false
+            IoUid = 0
+            IoGid = 0
+            SystemdCgroup = true
+            Root = "{KEEL_RUNTIME_DATA_HOME}/containerd/runc"
+    [plugins."io.containerd.grpc.v1.cri".cni]
+      bin_dir = "{KEEL_HOME}/cni"
+      conf_dir = "{KEEL_HOME}/cni/conf"
+      max_conf_num = 1
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      [plugins."io.containerd.grpc.v1.cri".registry.configs]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."localhost:5000".tls]
+          ca_file = "{KEEL_HOME}/ssl/ca.crt"
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+          endpoint = ["https://localhost:5000"]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+          endpoint = ["https://registry-1.docker.io"]
+    [plugins."io.containerd.grpc.v1.cri".image_decryption]
+      key_model = ""
+  [plugins."io.containerd.metadata.v1.bolt"]
+    content_sharing_policy = "shared"
+  [plugins."io.containerd.monitor.v1.cgroups"]
+    no_prometheus = false
+  [plugins."io.containerd.snapshotter.v1.devmapper"]
+    root_path = "{KEEL_RUNTIME_DATA_HOME}/containerd/thinpool-meta"
+    pool_name = "{THINPOOL_NAME}"
+    base_image_size = "10Gi"
+    async_remove = true
+

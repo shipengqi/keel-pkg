@@ -1,0 +1,43 @@
+apiVersion: audit.k8s.io/v1
+kind: Policy
+# Don't generate audit events for all requests in RequestReceived stage.
+omitStages:
+  - "RequestReceived"
+rules:
+  # Don't log watch requests
+  - level: None
+    verbs: ["watch"]
+
+  # Don't log requests to certain non-resource URL paths.
+  - level: None
+    nonResourceURLs:
+    - "/version"
+    - "/metrics"
+    - "/healthz*"
+    - "/livez*"
+    - "/readyz*"
+    - "/swagger*"
+    - "/logs*"
+    - "/openapi*"
+
+  # Explicitly log configmap secret and tokenreview changes in all other namespaces at the Metadata level.
+  - level: Metadata
+    resources:
+    - group: "" # core API group
+      resources: ["secrets", "configmaps", "tokenreviews"]
+
+  - level: Metadata
+    verbs: ["create", "delete", "patch", "update", "deletecollection"]
+    resources:
+    - group: "apps"
+      resources: ["deployments"]
+    - group: ""
+      resources: ["pods"]
+
+  - level: Metadata
+    resources:
+    - group: ""
+      resources: ["pods/exec", "pods/portforward", "pods/proxy", "services/proxy"]
+
+  # A catch-all rule to all other requests.
+  - level: None

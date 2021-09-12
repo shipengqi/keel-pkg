@@ -1,0 +1,125 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-flannel-ds-amd64
+  namespace: kube-system
+  labels:
+    tier: node
+    app: flannel
+spec:
+  selector:
+    matchLabels:
+      tier: node
+      app: flannel
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: flannel
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      serviceAccountName: flannel
+      imagePullSecrets:
+        - name: registrypullsecret
+      initContainers:
+      - name: install-cni
+        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_FLANNEL}
+        command:
+        - cp
+        args:
+        - -f
+        - /etc/kube-flannel/cni-conf.json
+        - /etc/cni/net.d/10-flannel.conflist
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+          limits:
+            cpu: "100m"
+            memory: "100Mi"
+        volumeMounts:
+        - name: cni-kubelet
+          mountPath: /etc/cni/net.d/
+        - name: cni-conf
+          mountPath: /etc/kube-flannel/
+      containers:
+      - name: kube-flannel
+        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_FLANNEL}
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+          limits:
+            cpu: "100m"
+            memory: "100Mi"
+        securityContext:
+          privileged: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        env:
+        - name: KUBERNETES_SERVICE_PORT
+          value: "{MASTER_API_SSL_PORT}"
+        - name: CURRENT_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: FLANNELD_KUBE_SUBNET_MGR
+          value: "true"
+        - name: FLANNELD_NET_CONFIG_PATH
+          value: /etc/kube-flannel/net-conf.json
+        - name: FLANNELD_SUBNET_FILE
+          value: /run/flannel/subnet.env
+        volumeMounts:
+        - name: iface-cfg
+          mountPath: /iface/
+          readOnly: true
+        - name: run
+          mountPath: /run
+        - name: cni-conf
+          mountPath: /etc/cni/net.d/
+          readOnly: true
+        - name: net-conf
+          mountPath: /etc/kube-flannel/
+          readOnly: true
+      priorityClassName: system-node-critical
+      volumes:
+        - name: run
+          hostPath:
+            path: /run
+        - name: cni-kubelet
+          hostPath:
+            path: {K8S_HOME}/cni/conf
+        - name: cni-conf
+          configMap:
+            name: kube-flannel-cfg
+            items:
+            - key: cni-conf.json
+              path: cni-conf.json
+        - name: net-conf
+          configMap:
+            name: kube-flannel-cfg
+            items:
+            - key: net-conf.json
+              path: net-conf.json
+        - name: iface-cfg
+          configMap:
+            name: kube-flannel-cfg

@@ -1,0 +1,46 @@
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+authentication:
+  webhook:
+    enabled: true
+    cacheTTL: 2m
+  x509:
+    clientCAFile: {K8S_HOME}/ssl/ca.crt
+  anonymous:
+    enabled: false
+authorization:
+  mode: Webhook
+cgroupDriver: systemd
+clusterDNS:
+  - {DNS_SVC_IP}
+clusterDomain: cluster.local.
+containerLogMaxFiles: 3
+containerLogMaxSize: 10Mi
+failSwapOn: {FAIL_SWAP_ON}
+hairpinMode: hairpin-veth
+imageGCHighThresholdPercent: 80
+imageGCLowThresholdPercent: 75
+kubeletCgroups: /kubereserved.slice
+kubeReservedCgroup: /kubereserved.slice
+protectKernelDefaults: {KUBELET_PROTECT_KERNEL_DEFAULTS}
+readOnlyPort: 0
+resolvConf: {RESOLV_CONF}
+staticPodPath: {K8S_HOME}/runconf
+systemReserved:
+  memory: 1.5Gi
+tlsCertFile: {K8S_HOME}/ssl/kubelet-server.crt
+tlsPrivateKeyFile: {K8S_HOME}/ssl/kubelet-server.key
+tlsCipherSuites:
+  - TLS_AES_128_GCM_SHA256
+  - TLS_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+  - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+  - TLS_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_RSA_WITH_AES_128_CBC_SHA
+  - TLS_RSA_WITH_AES_256_CBC_SHA
+

@@ -1,0 +1,11 @@
+
+module keel-runcpolicy 1.0;
+
+require {
+	type unconfined_domain_type;
+	type unlabeled_t;
+	class key {view read write search link setattr create}; 
+}
+
+#============= unconfined_service_t ==============
+allow unconfined_domain_type unlabeled_t:key {view read write search link setattr create};

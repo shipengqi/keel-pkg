@@ -1,0 +1,33 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=containerd.service
+Wants=containerd.service
+
+[Service]
+TimeoutStartSec=300s
+WorkingDirectory={KUBELET_HOME}/kubelet
+ExecStart={K8S_HOME}/bin/kubelet \
+  --config={K8S_HOME}/cfg/kubelet-config \
+  --root-dir={KUBELET_HOME}/kubelet \
+  --cert-dir={KUBELET_HOME}/ssl/kubelet \
+  --kubeconfig={K8S_HOME}/ssl/kubelet-kubeconfig \
+  --hostname-override={THIS_NODE} \
+  --node-labels={NODE_LABELS} \
+  --v=1 \
+  --logtostderr=true \
+  --pod-infra-container-image={DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_PAUSE} \
+  --runtime-cgroups=/kubereserved.slice \
+  --resolv-conf={RESOLV_CONF} \
+  --container-runtime=remote \
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock
+ExecStartPost=/bin/bash -c 'umask 0022; pgrep -x kubelet > /run/kubelet.pid'
+ExecStopPost=/bin/bash -c 'rm -f /run/kubelet.pid'
+Restart=always
+RestartSec=5
+User=root
+CPUAccounting=yes
+MemoryAccounting=yes
+
+[Install]
+WantedBy=multi-user.target

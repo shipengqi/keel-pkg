@@ -4,16 +4,16 @@ Documentation=https://containerd.io
 After=network.target local-fs.target
 
 [Service]
-WorkingDirectory={KEEL_RUNTIME_DATA_HOME}/containerd
+WorkingDirectory={{.KeelRuntimeDataHome}}/containerd
 ExecStartPre=-/sbin/modprobe overlay
-ExecStart={KEEL_HOME}/bin/containerd \
-          --config={KEEL_HOME}/cfg/containerd-config.toml
-ExecStop={KEEL_HOME}/bin/crictl rmp -af
-ExecStopPost={KEEL_HOME}/bin/kill-all-workloads.sh -y
-ExecStopPost={KEEL_HOME}/bin/kubelet-umount-action.sh -y
+ExecStart={{.KeelHome}}/bin/containerd \
+          --config={{.KeelHome}}/conf/containerd-config.toml
+ExecStop={{.KeelHome}}/bin/crictl rmp -af
+ExecStopPost={{.KeelHome}}/bin/kill-all-workloads.sh -y
+ExecStopPost={{.KeelHome}}/bin/kubelet-umount-action.sh -y
 # Workaround for containerd slow-start after reboot.
 # Remove it when containerd/containerd/issues/5597 solved.
-ExecStopPost=/usr/bin/find {KEEL_RUNTIME_DATA_HOME}/containerd/state/io.containerd.runtime.v2.task -name address -type f -delete
+ExecStopPost=/usr/bin/find {{.KeelRuntimeDataHome}}/containerd/state/io.containerd.runtime.v2.task -name address -type f -delete
 Type=exec
 Delegate=yes
 KillMode=process

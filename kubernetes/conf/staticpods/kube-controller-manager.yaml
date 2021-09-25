@@ -63,8 +63,8 @@ spec:
   priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
-      path: {K8S_HOME}/ssl
+      path: {{.KeelHome}}/ssl
     name: ssl-certs-path
   - hostPath:
-      path: {K8S_HOME}/cfg/controller-manager
+      path: {{.KeelHome}}/cfg/controller-manager
     name: config

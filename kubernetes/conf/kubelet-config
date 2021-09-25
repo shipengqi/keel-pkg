@@ -5,31 +5,30 @@ authentication:
     enabled: true
     cacheTTL: 2m
   x509:
-    clientCAFile: {K8S_HOME}/ssl/ca.crt
+    clientCAFile: {{.KeelHome}}/ssl/ca.crt
   anonymous:
     enabled: false
 authorization:
   mode: Webhook
 cgroupDriver: systemd
 clusterDNS:
-  - {DNS_SVC_IP}
+  - {{.DNSSvcIp}}
 clusterDomain: cluster.local.
 containerLogMaxFiles: 3
 containerLogMaxSize: 10Mi
-failSwapOn: {FAIL_SWAP_ON}
+failSwapOn: {{.FailSwapOn}}
 hairpinMode: hairpin-veth
 imageGCHighThresholdPercent: 80
 imageGCLowThresholdPercent: 75
 kubeletCgroups: /kubereserved.slice
 kubeReservedCgroup: /kubereserved.slice
-protectKernelDefaults: {KUBELET_PROTECT_KERNEL_DEFAULTS}
+protectKernelDefaults: {{.ProtectKernelDefaults}}
 readOnlyPort: 0
-resolvConf: {RESOLV_CONF}
-staticPodPath: {K8S_HOME}/runconf
+staticPodPath: {{.KeelHome}}/staticpods
 systemReserved:
   memory: 1.5Gi
-tlsCertFile: {K8S_HOME}/ssl/kubelet-server.crt
-tlsPrivateKeyFile: {K8S_HOME}/ssl/kubelet-server.key
+tlsCertFile: {{.KeelHome}}/ssl/kubelet-server.crt
+tlsPrivateKeyFile: {{.KeelHome}}/ssl/kubelet-server.key
 tlsCipherSuites:
   - TLS_AES_128_GCM_SHA256
   - TLS_AES_256_GCM_SHA384

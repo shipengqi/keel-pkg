@@ -1,10 +1,6 @@
 apiVersion: v1
 kind: Pod
 metadata:
-#  creationTimestamp: null
-#  labels:
-#    component: etcd
-#    tier: control-plane
   name: etcd
   namespace: kube-system
 spec:
@@ -73,10 +69,10 @@ spec:
 #  priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
-      path: {K8S_HOME}/ssl
+      path: {{.KeelHome}}/ssl
     name: etcd-certs
   - hostPath:
-      path: {KEEL_RUNTIME_DATA_HOME}/etcd
+      path: {{.KeelRuntimeDataHome}}/etcd
       type: DirectoryOrCreate
     name: etcd-data
 #status: {}

@@ -97,16 +97,16 @@ spec:
   priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
-      path: {K8S_HOME}/ssl
+      path: {{.KeelHome}}/ssl
     name: ssl-certs-path
   - hostPath:
-      path: {K8S_HOME}/cfg/apiserver-encryption.yaml
+      path: {{.KeelHome}}/cfg/apiserver-encryption.yaml
     name: encryption-cfg
 #{AUDIT_LOG}  - hostPath:                                             #{AUDIT_CONFIG_MARK}
-#{AUDIT_LOG}      path: {K8S_HOME}/cfg/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
+#{AUDIT_LOG}      path: {{.KeelHome}}/cfg/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}      type: File                                          #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}    name: audit-cfg                                       #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}  - hostPath:                                             #{AUDIT_CONFIG_MARK}
-#{AUDIT_LOG}      path: {K8S_HOME}/log/audit/kube-apiserver           #{AUDIT_CONFIG_MARK}
+#{AUDIT_LOG}      path: {{.KeelHome}}/log/audit/kube-apiserver           #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}      type: DirectoryOrCreate                             #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}    name: audit-log-dir                                   #{AUDIT_CONFIG_MARK}

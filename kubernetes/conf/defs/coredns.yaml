@@ -73,7 +73,7 @@ metadata:
   name: coredns
   namespace: kube-system
   labels:
-    k8s-app: kube-dns
+    k8s-app: coredns
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
 spec:
@@ -81,11 +81,11 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      k8s-app: kube-dns
+      k8s-app: coredns
   template:
     metadata:
       labels:
-        k8s-app: kube-dns
+        k8s-app: coredns
     spec:
       {HOST_ALIASES}
       nodeSelector:
@@ -159,19 +159,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kube-dns
+  name: coredns
   namespace: kube-system
   annotations:
     prometheus.io/port: "9153"
     prometheus.io/scrape: "true"
   labels:
-    k8s-app: kube-dns
+    k8s-app: coredns
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "CoreDNS"
 spec:
   selector:
-    k8s-app: kube-dns
+    k8s-app: coredns
   clusterIP: {DNS_SVC_IP}
   ports:
   - name: dns

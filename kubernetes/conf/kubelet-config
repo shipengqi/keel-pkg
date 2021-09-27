@@ -5,7 +5,7 @@ authentication:
     enabled: true
     cacheTTL: 2m
   x509:
-    clientCAFile: {{.KeelHome}}/ssl/ca.crt
+    clientCAFile: {{.SslDir}}/ca.crt
   anonymous:
     enabled: false
 authorization:
@@ -27,8 +27,8 @@ readOnlyPort: 0
 staticPodPath: {{.KeelHome}}/staticpods
 systemReserved:
   memory: 1.5Gi
-tlsCertFile: {{.KeelHome}}/ssl/kubelet-server.crt
-tlsPrivateKeyFile: {{.KeelHome}}/ssl/kubelet-server.key
+tlsCertFile: {{.SslDir}}/kubelet-server.crt
+tlsPrivateKeyFile: {{.SslDir}}/kubelet-server.key
 tlsCipherSuites:
   - TLS_AES_128_GCM_SHA256
   - TLS_AES_256_GCM_SHA384

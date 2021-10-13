@@ -24,3 +24,6 @@ tar -czvf ../kube-1.22.0.tar.gz ./
 ## Reference
 - https://blog.csdn.net/networken/article/details/84571373
 - [github client](https://github.com/google/go-github)
+
+## Know issues
+- `go build -tags="containers_image_openpgp"` https://github.com/containers/image/issues/268

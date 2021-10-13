@@ -6,6 +6,8 @@ After=network.target local-fs.target
 [Service]
 WorkingDirectory={{.KeelRuntimeDataHome}}/containerd
 ExecStartPre=-/sbin/modprobe overlay
+# Workaround for containerd slow-start after power-off without reboot command.
+ExecStartPre=-/usr/bin/find {{.KeelRuntimeDataHome}}/containerd/state/io.containerd.runtime.v2.task -name address -type f -delete
 ExecStart={{.KeelHome}}/bin/containerd \
           --config={{.KeelHome}}/conf/containerd-config.toml
 ExecStop={{.KeelHome}}/bin/crictl rmp -af

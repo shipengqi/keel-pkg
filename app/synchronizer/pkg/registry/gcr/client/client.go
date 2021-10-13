@@ -18,7 +18,15 @@ import (
 )
 
 const (
-	repo = "k8s.gcr.io"
+	DefaultGcrRepo       = "k8s.gcr.io"
+	DefaultRetryTimes    = 5
+	DefaultRetryInterval = time.Second * 5
+	DefaultTimeout       = time.Second * 20
+	DefaultPushTimeout   = time.Minute * 15
+)
+
+const (
+	_defaultGcrImagesListAPI = "https://k8s.gcr.io/v2/tags/list"
 )
 
 type Options struct {
@@ -31,6 +39,17 @@ type Options struct {
 	Timeout       time.Duration
 	PushTimeout   time.Duration
 	Ctx           context.Context
+	AdditionalNS  []string
+}
+
+func NewDefaultOptions() *Options {
+	return &Options{
+		Repo:          DefaultGcrRepo,
+		Retry:         DefaultRetryTimes,
+		RetryInterval: DefaultRetryInterval,
+		Timeout:       DefaultTimeout,
+		PushTimeout:   DefaultPushTimeout,
+	}
 }
 
 type Client struct {
@@ -47,9 +66,6 @@ func New(options *Options) *Client {
 	if options.Ctx == nil {
 		options.Ctx = context.Background()
 	}
-	if options.Repo == "" {
-		options.Repo = repo
-	}
 	return &Client{
 		Client: r,
 		opts:   options,
@@ -57,22 +73,22 @@ func New(options *Options) *Client {
 }
 
 func (c *Client) AllImages() ([]string, error) {
-	var baseNames []string
-	res, err := c.R().Get("https://k8s.gcr.io/v2/tags/list")
+	var allBaseNames []string
+	var err error
+
+	allBaseNames, err = c.allImages(_defaultGcrImagesListAPI)
 	if err != nil {
 		return nil, err
 	}
-	switch res.StatusCode() {
-	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
-		// do nothing
-	default:
-		return nil, errors.Errorf("/tags/list status: %d", res.StatusCode())
+	for i := range c.opts.AdditionalNS {
+		baseNames, err := c.allImages(fmt.Sprintf("https://k8s.gcr.io/v2/%s/tags/list", c.opts.AdditionalNS[i]))
+		if err != nil {
+			log.Warnf("Additional namespace error: %v", err)
+			continue
+		}
+		allBaseNames = append(allBaseNames, baseNames...)
 	}
-	err = jsoniter.UnmarshalFromString(jsoniter.Get(res.Body(), "child").ToString(), &baseNames)
-	if err != nil {
-		return nil, err
-	}
-	return baseNames, nil
+	return allBaseNames, nil
 }
 
 func (c *Client) AllTags(baseName string) ([]string, error) {
@@ -134,4 +150,23 @@ func (c *Client) Sync(src, dst string) error {
 	}
 	log.Debugf("sync %s done", src)
 	return nil
+}
+
+func (c *Client) allImages(imagesUri string) ([]string, error) {
+	var baseNames []string
+	res, err := c.R().Get(imagesUri)
+	if err != nil {
+		return nil, err
+	}
+	switch res.StatusCode() {
+	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
+		// do nothing
+	default:
+		return nil, errors.Errorf("%s status: %d", imagesUri, res.StatusCode())
+	}
+	err = jsoniter.UnmarshalFromString(jsoniter.Get(res.Body(), "child").ToString(), &baseNames)
+	if err != nil {
+		return nil, err
+	}
+	return baseNames, nil
 }

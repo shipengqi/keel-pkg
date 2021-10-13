@@ -3,19 +3,10 @@ package client
 import (
 	"fmt"
 	"testing"
-	"time"
 )
 
 func TestClient_AllImages(t *testing.T) {
-	c := New(&Options{
-		Username:      "",
-		Password:      "",
-		Token:         "",
-		Retry:         5,
-		RetryInterval: time.Second * 5,
-		Timeout:       time.Second * 15,
-		Ctx:           nil,
-	})
+	c := New(NewDefaultOptions())
 	images, err := c.AllImages()
 	if err != nil {
 		t.Fatal(err)
@@ -24,15 +15,7 @@ func TestClient_AllImages(t *testing.T) {
 }
 
 func TestClient_AllTags(t *testing.T) {
-	c := New(&Options{
-		Username:      "",
-		Password:      "",
-		Token:         "",
-		Retry:         5,
-		RetryInterval: time.Second * 5,
-		Timeout:       time.Second * 15,
-		Ctx:           nil,
-	})
+	c := New(NewDefaultOptions())
 	images, err := c.AllImages()
 	if err != nil {
 		t.Fatal(err)
@@ -52,16 +35,10 @@ func TestClient_AllTags(t *testing.T) {
 }
 
 func TestClient_Sync(t *testing.T) {
-	c := New(&Options{
-		Username:      "15670953622",
-		Password:      "spq@2037",
-		Token:         "",
-		Retry:         5,
-		RetryInterval: time.Second * 5,
-		Timeout:       time.Second * 20,
-		PushTimeout:   time.Minute * 15,
-		Ctx:           nil,
-	})
+	opts := NewDefaultOptions()
+	opts.Username = "15670953622"
+	opts.Password = "spq@2037"
+	c := New(opts)
 	images, err := c.AllImages()
 	if err != nil {
 		t.Fatal(err)

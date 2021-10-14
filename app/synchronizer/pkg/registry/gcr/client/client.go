@@ -86,6 +86,9 @@ func (c *Client) AllImages() ([]string, error) {
 			log.Warnf("Additional namespace error: %v", err)
 			continue
 		}
+		for k := range baseNames {
+			baseNames[k] = fmt.Sprintf("%s/%s", c.opts.AdditionalNS[i], baseNames[k])
+		}
 		allBaseNames = append(allBaseNames, baseNames...)
 	}
 	return allBaseNames, nil

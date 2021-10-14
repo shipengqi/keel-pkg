@@ -182,7 +182,7 @@ var defaultZapLogger *Logger
 func init() {
 	defaultZapLogger, _ = newZapLogger(Config{
 		ConsoleEnabled: true,
-		ConsoleLevel:   "INFO",
+		ConsoleLevel:   "DEBUG",
 	})
 }
 

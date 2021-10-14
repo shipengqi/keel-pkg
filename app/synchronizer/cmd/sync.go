@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"time"
 
 	"github.com/shipengqi/keel-pkg/app/synchronizer/action"
 	"github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
@@ -38,8 +39,12 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"The location of boltdb file",
 	)
 	f.IntVar(
-		&o.Concurrency, "process-limit", 2,
-		"Set the count of concurrent",
+		&o.QueryLimit, "query-limit", 2,
+		"Set http query limit",
+	)
+	f.IntVar(
+		&o.Limit, "limit", 2,
+		"Set sync limit",
 	)
 	f.DurationVar(
 		&o.CmdTimeout, "command-timeout", 0,

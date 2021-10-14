@@ -9,26 +9,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/containers/image/v5/copy"
-	"github.com/containers/image/v5/docker"
-	"github.com/containers/image/v5/signature"
-	"github.com/containers/image/v5/types"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 
+	"github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
 	"github.com/shipengqi/keel-pkg/lib/log"
 )
 
 type SyncOptions struct {
-	Username    string
-	Password    string
-	Registry    string
-	Namespace   string
-	DbFile      string
+	*client.Options
+	Db          string
+	PushToRepo  string
+	PushToNS    string
 	Concurrency int
-	LoginRetry  int
-	SyncRetry   int
-	Timeout     time.Duration
+	CmdTimeout  time.Duration
 }
 
 type synca struct {
@@ -40,8 +34,8 @@ type synca struct {
 func (s *synca) PreRun() (err error) {
 	var cancel context.CancelFunc
 	s.ctx, cancel = context.WithCancel(context.Background())
-	if s.options.Timeout > 0 {
-		s.ctx, cancel = context.WithTimeout(s.ctx, s.options.Timeout)
+	if s.options.CmdTimeout > 0 {
+		s.ctx, cancel = context.WithTimeout(s.ctx, s.options.CmdTimeout)
 	}
 	var cancelOnce sync.Once
 	defer cancel()
@@ -68,7 +62,7 @@ func (s *synca) Run() (err error) {
 	processWg.Add(len(s.imgs))
 
 	pool, err := ants.NewPool(s.options.Concurrency, ants.WithPreAlloc(true), ants.WithPanicHandler(func(i interface{}) {
-		log.Error("WithPanicHandler")
+		log.Errors(i)
 	}))
 	if err != nil {
 		return errors.Wrap(err, "create goroutines pool")

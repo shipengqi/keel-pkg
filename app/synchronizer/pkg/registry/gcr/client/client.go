@@ -36,7 +36,7 @@ type Options struct {
 	Repo          string
 	Retry         int
 	RetryInterval time.Duration
-	Timeout       time.Duration
+	ReqTimeout    time.Duration
 	PushTimeout   time.Duration
 	Ctx           context.Context
 	AdditionalNS  []string
@@ -47,7 +47,7 @@ func NewDefaultOptions() *Options {
 		Repo:          DefaultGcrRepo,
 		Retry:         DefaultRetryTimes,
 		RetryInterval: DefaultRetryInterval,
-		Timeout:       DefaultTimeout,
+		ReqTimeout:    DefaultTimeout,
 		PushTimeout:   DefaultPushTimeout,
 	}
 }
@@ -60,7 +60,7 @@ type Client struct {
 
 func New(options *Options) *Client {
 	r := resty.New()
-	r.SetTimeout(options.Timeout)
+	r.SetTimeout(options.ReqTimeout)
 	r.SetRetryCount(options.Retry)
 	r.SetRetryWaitTime(options.RetryInterval)
 	if options.Ctx == nil {
@@ -98,7 +98,7 @@ func (c *Client) AllTags(baseName string) ([]string, error) {
 		return nil, err
 	}
 	authCtx := &types.SystemContext{DockerAuthConfig: &types.DockerAuthConfig{}}
-	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.Timeout)
+	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.ReqTimeout)
 	defer cancel()
 	return docker.GetRepositoryTags(ctx, authCtx, ref)
 }

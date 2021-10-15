@@ -12,14 +12,15 @@ import (
 
 func NewSyncCommand() *cobra.Command {
 	o := &action.SyncOptions{
-		Options: &client.Options{},
+		Options: client.NewDefaultOptions(),
 	}
 
 	c := &cobra.Command{
-		Use:   "sync",
+		Use:   "sync [options]",
 		Short: "Sync images",
-		Run: func(cmd *cobra.Command, args []string) {
-			_ = cmd.Help()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			a := action.NewSyncAction(o)
+			return action.Execute(a)
 		},
 	}
 
@@ -27,9 +28,10 @@ func NewSyncCommand() *cobra.Command {
 
 	flags := c.Flags()
 	flags.SortFlags = false
+	c.DisableFlagsInUseLine = true
 
-	addSyncFlags(flags, o)
 	addRegistryClientFlags(flags, o)
+	addSyncFlags(flags, o)
 	return c
 }
 
@@ -39,11 +41,11 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"The location of boltdb file",
 	)
 	f.IntVar(
-		&o.QueryLimit, "query-limit", 2,
+		&o.QueryLimit, "query-limit", 10,
 		"Set http query limit",
 	)
 	f.IntVar(
-		&o.Limit, "limit", 2,
+		&o.Limit, "limit", 5,
 		"Set sync limit",
 	)
 	f.DurationVar(

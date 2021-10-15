@@ -25,5 +25,10 @@ tar -czvf ../kube-1.22.0.tar.gz ./
 - https://blog.csdn.net/networken/article/details/84571373
 - [github client](https://github.com/google/go-github)
 
+## Build
+```bash
+CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o synctl ./app/synchronizer/
+```
+
 ## Know issues
 - `go build -tags="containers_image_openpgp"` https://github.com/containers/image/issues/268

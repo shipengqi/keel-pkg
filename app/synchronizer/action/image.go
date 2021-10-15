@@ -8,7 +8,7 @@ type Image struct {
 	Name     string // basename
 	Tag      string
 	Success  bool
-	CacheHit bool
+	Synced   bool
 	Err      error
 }
 

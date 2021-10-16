@@ -3,11 +3,8 @@ package action
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
 	"sort"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/panjf2000/ants/v2"
@@ -32,41 +29,25 @@ type synca struct {
 
 	opts *SyncOptions
 	gcr  *gcrc.Client
-	ctx  context.Context
 }
 
-func NewSyncAction(opts *SyncOptions) *synca {
-	return &synca{
+const (
+	NameSync = "sync"
+)
+
+func NewSyncAction(opts *SyncOptions) Interface {
+	a := &synca{
+		action: &action{
+			name: NameSync,
+		},
 		opts: opts,
 		gcr:  gcrc.New(opts.Options),
 	}
-}
-
-func (s *synca) PreRun() (err error) {
-	var cancel context.CancelFunc
-	s.ctx, cancel = context.WithCancel(context.Background())
-	if s.opts.CmdTimeout > 0 {
-		s.ctx, cancel = context.WithTimeout(s.ctx, s.opts.CmdTimeout)
+	a.ctx, a.cancel = context.WithCancel(context.Background())
+	if opts.CmdTimeout > 0 {
+		a.ctx, a.cancel = context.WithTimeout(a.ctx, opts.CmdTimeout)
 	}
-
-	var cancelOnce sync.Once
-	defer cancel()
-	go func() {
-		quit := make(chan os.Signal)
-		signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-		for {
-			select {
-			case sig := <-quit:
-				log.Debugf("get a signal %s", sig.String())
-				cancelOnce.Do(func() {
-					log.Info("Shutdown!")
-					cancel()
-				})
-			}
-		}
-	}()
-
-	return
+	return a
 }
 
 func (s *synca) Run() (err error) {
@@ -80,9 +61,13 @@ func (s *synca) Run() (err error) {
 	if err != nil {
 		return err
 	}
-
 	sort.Sort(images)
-
+	log.Infof("sync images count: %d", len(images))
+	err = s.syncImages(images)
+	if err != nil {
+		return err
+	}
+	log.Info("sync images done")
 	return
 }
 
@@ -116,7 +101,8 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(len(pubs))
-	for _, pub := range pubs {
+	for i := 0; i < len(pubs); i++ {
+		pub := pubs[i]
 		// fullName := fmt.Sprintf("%s/%s", s.opts.Repo, pub)
 		err = pool.Submit(func() {
 			defer wg.Done()
@@ -145,7 +131,7 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 		}
 	}
 	wg.Wait()
-	log.Infof("fetched all tags, total: %d", len(images))
+	log.Infof("fetched all images, total: %d", len(images))
 	return images, nil
 }
 
@@ -164,22 +150,23 @@ func (s *synca) syncImages(images Images) error {
 	defer pool.Release()
 
 	for i := 0; i < len(images); i++ {
+		k := i
 		err = pool.Submit(func() {
 			defer wg.Done()
 			select {
 			case <-s.ctx.Done():
-				log.Warnf("context done, sync image: %s", images[i].String())
+				log.Warnf("context done, sync image: %s", images[k].String())
 			default:
-				log.Debugf("syncing image: %s ...", images[i].String())
+				log.Debugf("syncing image: %s ...", images[k].String())
 				err := retry(s.opts.Retry, s.opts.RetryInterval, func() error {
-					return s.pushOne(images[i])
+					return s.pushOne(images[k])
 				})
 				if err != nil {
-					log.Warnf("sync image %s: %s", images[i].String(), err)
+					log.Warnf("sync image %s: %s", images[k].String(), err)
 					return
 				}
-				images[i].Success = true
-				log.Debugf("sync image: %s done", images[i].String())
+				images[k].Success = true
+				log.Debugf("sync image: %s done", images[k].String())
 			}
 		})
 		if err != nil {

@@ -17,7 +17,11 @@ func New() *cobra.Command {
 		},
 	}
 
-	c.AddCommand(NewSyncCommand())
+	c.AddCommand(
+		NewSyncCommand(),
+		NewCheckCommand(),
+		NewSumCommand(),
+	)
 	cobra.EnableCommandSorting = false
 	c.CompletionOptions.DisableDefaultCmd = true
 	c.DisableFlagsInUseLine = true

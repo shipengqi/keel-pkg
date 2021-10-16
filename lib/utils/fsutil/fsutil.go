@@ -31,6 +31,9 @@ func HomeDir() string {
 }
 
 func MustMkDir(fpath string) error {
+	if fpath == "" {
+		return nil
+	}
 	if exist := PathExists(fpath); !exist {
 		if err := MkDirAll(fpath); err != nil {
 			return err
@@ -156,6 +159,9 @@ func CopyFile(dst, src string) (err error) {
 }
 
 func MustCopyDir(dst, src string) error {
+	if dst == "" || src == "" {
+		return nil
+	}
 	var err error
 	var fds []os.FileInfo
 	var srcinfo os.FileInfo

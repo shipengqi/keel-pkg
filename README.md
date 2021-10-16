@@ -13,7 +13,7 @@ tar -czvf ../kube-1.22.0.tar.gz ./
 - https://github.com/containers/skopeo
   - [skopeo-sync](https://github.com/containers/skopeo/blob/main/docs/skopeo-sync.1.md)
 - https://github.com/containers/image
-- 
+
 ## Registry
 - [Google GCR](https://console.cloud.google.com/gcr/images/google-containers)
 - [AliCloud ACR](https://cr.console.aliyun.com/cn-hangzhou/instances/images)

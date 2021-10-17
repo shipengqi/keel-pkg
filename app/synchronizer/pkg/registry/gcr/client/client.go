@@ -3,15 +3,18 @@ package client
 import (
 	"context"
 	"fmt"
+	"hash/crc32"
 	"net/http"
 	"time"
 
 	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker"
+	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/signature"
 	"github.com/containers/image/v5/types"
 	"github.com/go-resty/resty/v2"
 	jsoniter "github.com/json-iterator/go"
+	specv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
 
 	"github.com/shipengqi/keel-pkg/lib/log"
@@ -153,6 +156,37 @@ func (c *Client) Sync(src, dst string) error {
 	}
 	log.Debugf("sync %s done", src)
 	return nil
+}
+
+func (c *Client) ManifestCheckSum(imageName string) (uint32, error) {
+	ref, err := docker.ParseReference("//" + imageName)
+	if err != nil {
+		return 0, err
+	}
+	authCtx := &types.SystemContext{DockerAuthConfig: &types.DockerAuthConfig{}}
+	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.ReqTimeout)
+	defer cancel()
+	src, err := ref.NewImageSource(ctx, authCtx)
+	if err != nil {
+		return 0, err
+	}
+	reqCtx, reqCancel := context.WithTimeout(context.Background(), c.opts.ReqTimeout)
+	defer reqCancel()
+	mbs, _, err := src.GetManifest(reqCtx, nil)
+	if err != nil {
+		return 0, err
+	}
+	mType := manifest.GuessMIMEType(mbs)
+	if mType == "" {
+		return 0, errors.Errorf("parse image [%s] manifest type", imageName)
+	}
+	if mType != manifest.DockerV2ListMediaType && mType != specv1.MediaTypeImageIndex {
+		_, err = manifest.FromBlob(mbs, mType)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return crc32.ChecksumIEEE(mbs), nil
 }
 
 func (c *Client) allImages(imagesUri string) ([]string, error) {

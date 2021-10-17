@@ -29,6 +29,10 @@ func New(dbUri string) (*Boltdb, error) {
 	return &Boltdb{db: db}, nil
 }
 
+func (b *Boltdb) Db() *bolt.DB {
+	return b.db
+}
+
 func (b *Boltdb) Close() error {
 	return b.db.Close()
 }

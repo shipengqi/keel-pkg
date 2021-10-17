@@ -11,19 +11,21 @@ const (
 	K8SRegistryUri = "k8s.gcr.io"
 )
 
+type CloseFunc func() error
+
 type Interface interface {
 	Name() string
 	PreRun() error
 	Run() error
 	PostRun() error
 	Ctx() context.Context
-	Cancel() context.CancelFunc
+	Close() CloseFunc
 }
 
 type action struct {
-	name   string
-	ctx    context.Context
-	cancel context.CancelFunc
+	name  string
+	ctx   context.Context
+	close CloseFunc
 }
 
 func (a *action) Name() string {
@@ -49,14 +51,14 @@ func (a *action) Ctx() context.Context {
 	return a.ctx
 }
 
-func (a *action) Cancel() context.CancelFunc {
-	return a.cancel
+func (a *action) Close() CloseFunc {
+	return nil
 }
 
 func Execute(a Interface) error {
 	defer func() {
-		if a.Cancel() != nil {
-			a.Cancel()
+		if a.Close() != nil {
+			a.Close()
 		}
 	}()
 	err := a.PreRun()

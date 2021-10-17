@@ -14,6 +14,10 @@ import (
 	"github.com/shipengqi/keel-pkg/lib/log"
 )
 
+const (
+	NameSync = "sync"
+)
+
 type SyncOptions struct {
 	*gcrc.Options
 	Db         string
@@ -31,22 +35,28 @@ type synca struct {
 	gcr  *gcrc.Client
 }
 
-const (
-	NameSync = "sync"
-)
-
 func NewSyncAction(opts *SyncOptions) Interface {
+	var ctx context.Context
+	var cancel context.CancelFunc
+
+	ctx, cancel = context.WithCancel(context.Background())
+	if opts.CmdTimeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, opts.CmdTimeout)
+	}
+
 	a := &synca{
 		action: &action{
 			name: NameSync,
+			ctx: ctx,
+			close: func() error {
+				cancel()
+				return nil
+			},
 		},
 		opts: opts,
 		gcr:  gcrc.New(opts.Options),
 	}
-	a.ctx, a.cancel = context.WithCancel(context.Background())
-	if opts.CmdTimeout > 0 {
-		a.ctx, a.cancel = context.WithTimeout(a.ctx, opts.CmdTimeout)
-	}
+
 	return a
 }
 

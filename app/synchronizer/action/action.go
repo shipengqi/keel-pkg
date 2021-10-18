@@ -7,10 +7,6 @@ import (
 	"github.com/shipengqi/keel-pkg/lib/log"
 )
 
-const (
-	K8SRegistryUri = "k8s.gcr.io"
-)
-
 type CloseFunc func() error
 
 type Interface interface {

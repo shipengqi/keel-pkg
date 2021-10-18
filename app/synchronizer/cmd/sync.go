@@ -37,7 +37,7 @@ func NewSyncCommand() *cobra.Command {
 
 func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 	f.StringVar(
-		&o.Db, "db", "bolt.db",
+		&o.Db, "db", DefaultDBFile,
 		"The location of boltdb file",
 	)
 	f.IntVar(

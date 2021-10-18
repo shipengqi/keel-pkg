@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/containers/image/v5/copy"
@@ -31,6 +32,40 @@ const (
 const (
 	_defaultGcrImagesListAPI = "https://k8s.gcr.io/v2/tags/list"
 )
+
+var requiredImages = []string{
+	"etcd",
+	"etcd-amd64",
+	"etcd-arm",
+	"etcd-arm64",
+	"etcd-ppc64le",
+	"etcd-s390x",
+	"flannel-amd64",
+	"flannel-arm",
+	"flannel-arm64",
+	"flannel-ppc64le",
+	"coredns",
+	"nginx",
+	"nginx-ingress",
+	"nginx-ingress-controller",
+	"nginx-ingress-controller-amd64",
+	"nginx-ingress-controller-arm",
+	"nginx-ingress-controller-arm64",
+	"nginx-ingress-controller-ppc64le",
+}
+
+var requiredPrefix = []string{
+	"kube",
+	"k8s",
+	"fluentd",
+	"fluent-bit",
+	"hyperkube",
+	"metrics",
+	"pause",
+	"alpine-iptables",
+	"debian-iptables",
+	"federation",
+}
 
 type Options struct {
 	Username      string
@@ -94,7 +129,30 @@ func (c *Client) AllImages() ([]string, error) {
 		}
 		allBaseNames = append(allBaseNames, baseNames...)
 	}
-	return allBaseNames, nil
+
+	var filters []string
+	// filter useful images
+	for n := range allBaseNames {
+		found := false
+		for i := range requiredImages {
+			if allBaseNames[n] == requiredImages[i] {
+				filters = append(filters, allBaseNames[n])
+				found = true
+				break
+			}
+		}
+		if found {
+			continue
+		}
+		for p := range requiredPrefix {
+			if strings.HasPrefix(allBaseNames[n], requiredPrefix[p]) {
+				filters = append(filters, allBaseNames[n])
+				break
+			}
+		}
+	}
+
+	return filters, nil
 }
 
 func (c *Client) AllTags(baseName string) ([]string, error) {
@@ -110,7 +168,6 @@ func (c *Client) AllTags(baseName string) ([]string, error) {
 }
 
 func (c *Client) Sync(src, dst string) error {
-	log.Debugf("syncing %s to %s ...", src, dst)
 	srcRef, err := docker.ParseReference("//" + src)
 	if err != nil {
 		return err

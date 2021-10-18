@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	DefaultDBFile = "sync.bolt.db"
+)
+
 func New() *cobra.Command {
 	baseName := filepath.Base(os.Args[0])
 	c := &cobra.Command{

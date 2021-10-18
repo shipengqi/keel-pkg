@@ -10,6 +10,7 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 
+	"github.com/shipengqi/keel-pkg/app/synchronizer/pkg/boltdb"
 	gcrc "github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
 	"github.com/shipengqi/keel-pkg/lib/log"
 )
@@ -28,11 +29,20 @@ type SyncOptions struct {
 	CmdTimeout time.Duration
 }
 
+type reports struct {
+	total   int
+	success int
+	failed  int
+	synced  int
+}
+
 type synca struct {
 	*action
 
+	r    *reports
 	opts *SyncOptions
 	gcr  *gcrc.Client
+	db   *boltdb.Boltdb
 }
 
 func NewSyncAction(opts *SyncOptions) Interface {
@@ -44,20 +54,34 @@ func NewSyncAction(opts *SyncOptions) Interface {
 		ctx, cancel = context.WithTimeout(ctx, opts.CmdTimeout)
 	}
 
+	db, err := boltdb.New(opts.Db)
+	if err != nil {
+		panic(err)
+	}
+
 	a := &synca{
 		action: &action{
 			name: NameSync,
-			ctx: ctx,
+			ctx:  ctx,
 			close: func() error {
 				cancel()
 				return nil
 			},
 		},
+		r:    &reports{},
 		opts: opts,
 		gcr:  gcrc.New(opts.Options),
+		db:   db,
 	}
 
 	return a
+}
+
+func (s *synca) PreRun() error {
+	if err := s.db.CreatBucket(gcrc.DefaultGcrRepo); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *synca) Run() (err error) {
@@ -82,7 +106,7 @@ func (s *synca) Run() (err error) {
 }
 
 func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
-	log.Infof("fetch all public images from %s", s.opts.Repo)
+	log.Infof("fetch %d images tags from %s", len(pubs), s.opts.Repo)
 
 	pool, err := ants.NewPool(s.opts.QueryLimit,
 		ants.WithPreAlloc(true),
@@ -146,6 +170,9 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 }
 
 func (s *synca) syncImages(images Images) error {
+	var success, failed, synced int
+	s.r.total = len(images)
+
 	wg := new(sync.WaitGroup)
 	wg.Add(len(images))
 
@@ -168,15 +195,25 @@ func (s *synca) syncImages(images Images) error {
 				log.Warnf("context done, sync image: %s", images[k].String())
 			default:
 				log.Debugf("syncing image: %s ...", images[k].String())
+				newSum, diff := s.check(images[k])
+				if !diff {
+					synced++
+					return
+				}
 				err := retry(s.opts.Retry, s.opts.RetryInterval, func() error {
 					return s.pushOne(images[k])
 				})
 				if err != nil {
+					failed++
 					log.Warnf("sync image %s: %s", images[k].String(), err)
 					return
 				}
-				images[k].Success = true
+				success++
 				log.Debugf("sync image: %s done", images[k].String())
+				if err := s.db.SaveUint32(images[k].Key(), newSum); err != nil {
+					log.Warnf("failed to save image [%s] checksum: %v", images[k].String(), err)
+				}
+				log.Debugf("save image [%s] checksum: %d", images[k].String(), newSum)
 			}
 		})
 		if err != nil {
@@ -185,14 +222,61 @@ func (s *synca) syncImages(images Images) error {
 		}
 	}
 	wg.Wait()
+	s.r.failed = failed
+	s.r.success = success
+	s.r.synced = synced
 	return nil
+}
+
+func (s *synca) PostRun() error {
+	report := fmt.Sprintf(`========================================
+>> Sync Repo: k8s.gcr.io
+>> Sync Total: %d
+>> Sync Failed: %d
+>> Sync Success: %d
+>> Synced: %d`, s.r.total, s.r.failed, s.r.success, s.r.synced)
+	fmt.Println(report)
+	return nil
+}
+
+func (s *synca) check(image *Image) (uint32, bool) {
+	var (
+		bodySum uint32
+		diff    bool
+	)
+	imgFullName := image.String()
+	err := retry(s.opts.Retry, s.opts.RetryInterval, func() error {
+		var mErr error
+		bodySum, mErr = s.gcr.ManifestCheckSum(imgFullName)
+		if mErr != nil {
+			return mErr
+		}
+		if bodySum == 0 {
+			return errors.New("checkSum is 0, maybe resp body is nil")
+		}
+		return nil
+	})
+	if err != nil {
+		log.Errorf("failed to get image [%s] manifest, error: %s", imgFullName, err)
+		return 0, false
+	}
+	diff, err = s.db.Diff(image.Key(), bodySum)
+	if err != nil {
+		log.Errorf("failed to get image [%s] checkSum, error: %s", imgFullName, err)
+		return 0, false
+	}
+	log.Debugf("%s diff: %v", imgFullName, diff)
+	if !diff {
+		log.Debugf("image [%s] not changed, skip sync...", imgFullName)
+		return 0, false
+	}
+	return bodySum, true
 }
 
 func (s *synca) pushOne(image *Image) error {
 	dst := fmt.Sprintf("%s/%s/%s:%s", s.opts.PushToRepo, s.opts.PushToNS, image.Name, image.Tag)
 	log.Debugf("syncing %s to %s ...", image.String(), dst)
-	return nil
-	// return s.gcr.Sync(image.String(), dst)
+	return s.gcr.Sync(image.String(), dst)
 }
 
 func retry(count int, interval time.Duration, f func() error) error {

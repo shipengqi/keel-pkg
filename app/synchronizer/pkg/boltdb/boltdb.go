@@ -66,7 +66,7 @@ func (b *Boltdb) GetUint32(key string) (uint32, error) {
 		return 0, err
 	}
 	if len(sumBytes) != int(types.Uint32) { // length not equal uint32
-		log.Warnf("key: %s, len: %d", key, len(sumBytes))
+		log.Warnf("key: %s, sum length: %d", key, len(sumBytes))
 		return 0, nil
 	}
 	sum := binary.LittleEndian.Uint32(sumBytes)

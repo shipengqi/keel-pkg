@@ -23,7 +23,7 @@ func NewCheckCommand() *cobra.Command {
 	}
 	c.DisableFlagsInUseLine = true
 
-	c.Flags().StringVar(&o.Db, "db", "bolt.db", "The location of boltdb file")
+	c.Flags().StringVar(&o.Db, "db", DefaultDBFile, "The location of boltdb file")
 
 	return c
 }

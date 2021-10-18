@@ -7,9 +7,6 @@ type Images []*Image
 type Image struct {
 	Name     string // basename
 	Tag      string
-	Success  bool
-	Synced   bool
-	Err      error
 }
 
 func (i *Image) String() string {

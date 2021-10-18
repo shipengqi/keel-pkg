@@ -387,6 +387,8 @@ func newZapLogger(config Config) (*Logger, error) {
 			return nil, errors.Wrap(err, "set console level")
 		}
 		consoleEncCfg := zapcore.EncoderConfig{
+			TimeKey:        "time",
+			LevelKey:       "level",
 			NameKey:        "logger",
 			CallerKey:      "caller",
 			MessageKey:     "msg",

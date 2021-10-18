@@ -30,5 +30,10 @@ tar -czvf ../kube-1.22.0.tar.gz ./
 CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o synctl ./app/synchronizer/
 ```
 
+## Usage
+```bash
+./synctl sync -u 15670953622 -p <ALI_REGISTRY_PASS>
+```
+
 ## Know issues
 - `go build -tags="containers_image_openpgp"` https://github.com/containers/image/issues/268

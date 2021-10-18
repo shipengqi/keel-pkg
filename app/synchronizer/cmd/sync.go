@@ -41,15 +41,15 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"The location of boltdb file",
 	)
 	f.IntVar(
-		&o.QueryLimit, "query-limit", 10,
+		&o.QueryLimit, "query-limit", DefaultQueryLimit,
 		"Set http query limit",
 	)
 	f.IntVar(
-		&o.Limit, "limit", 5,
+		&o.Limit, "limit", DefaultQueryLimit,
 		"Set sync limit",
 	)
 	f.DurationVar(
-		&o.CmdTimeout, "command-timeout", 0,
+		&o.CmdTimeout, "command-timeout", DefaultLimit,
 		"Set timeout for the command execution",
 	)
 	f.DurationVar(
@@ -57,7 +57,7 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"Set timeout for pushing a image",
 	)
 	f.IntVar(
-		&o.Retry, "retry", 5,
+		&o.Retry, "retry", DefaultRetryCount,
 		"Retry count.",
 	)
 	f.DurationVar(
@@ -67,6 +67,10 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 	f.StringSliceVar(
 		&o.AdditionalNS, "addition-ns", nil,
 		"Additional namespaces to sync")
+	f.StringVar(
+		&o.Images, "images", "",
+		"The location of images file",
+	)
 }
 
 func addRegistryClientFlags(f *pflag.FlagSet, o *action.SyncOptions) {
@@ -79,11 +83,11 @@ func addRegistryClientFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"The password of the registry to be pushed",
 	)
 	f.StringVar(
-		&o.PushToRepo, "push-to", "registry.cn-hangzhou.aliyuncs.com",
+		&o.PushToRepo, "push-to", DefaultPushToRegistry,
 		"The registry to be pushed",
 	)
 	f.StringVar(
-		&o.PushToNS, "push-ns", "keel",
+		&o.PushToNS, "push-ns", DefaultPushToNs,
 		"The namespace of the registry to be pushed",
 	)
 }

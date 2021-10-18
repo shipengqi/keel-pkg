@@ -24,6 +24,7 @@ type SyncOptions struct {
 	Db         string
 	PushToRepo string
 	PushToNS   string
+	Images     string
 	Limit      int
 	QueryLimit int
 	CmdTimeout time.Duration
@@ -90,7 +91,7 @@ func (s *synca) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	log.Infof("found images count: %d in k8s.gcr.io", len(pubs))
+	log.Infof("found images count: %d in %s", len(pubs), gcrc.DefaultGcrRepo)
 	images, err := s.fetchImageTagList(pubs)
 	if err != nil {
 		return err
@@ -101,12 +102,12 @@ func (s *synca) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	log.Info("sync images done")
+	log.Info("sync images done!!!")
 	return
 }
 
 func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
-	log.Infof("fetch %d images tags from %s", len(pubs), s.opts.Repo)
+	log.Infof("fetch %d images tags from [%s]", len(pubs), s.opts.Repo)
 
 	pool, err := ants.NewPool(s.opts.QueryLimit,
 		ants.WithPreAlloc(true),
@@ -142,15 +143,15 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 			defer wg.Done()
 			select {
 			case <-s.ctx.Done():
-				log.Warnf("context done, fetch tags of %s", pub)
+				log.Warnf("context done, fetch tags of [%s]", pub)
 			default:
-				log.Debugf("fetch tags of %s ...", pub)
+				log.Debugf("fetch tags of [%s] ...", pub)
 				tags, err := s.gcr.AllTags(pub)
 				if err != nil {
-					log.Warnf("fetch tags of %s failed!", pub)
+					log.Warnf("fetch tags of [%s] failed!", pub)
 					return
 				}
-				log.Debugf("fetch tags count: %d, %s ...", len(tags), pub)
+				log.Debugf("fetch tags count: %d, [%s] ...", len(tags), pub)
 				for _, tag := range tags {
 					imgC <- Image{
 						Name: pub,
@@ -192,9 +193,9 @@ func (s *synca) syncImages(images Images) error {
 			defer wg.Done()
 			select {
 			case <-s.ctx.Done():
-				log.Warnf("context done, sync image: %s", images[k].String())
+				log.Warnf("context done, sync image: [%s]", images[k].String())
 			default:
-				log.Debugf("syncing image: %s ...", images[k].String())
+				log.Debugf("syncing image: [%s] ...", images[k].String())
 				newSum, diff := s.check(images[k])
 				if !diff {
 					synced++
@@ -205,11 +206,11 @@ func (s *synca) syncImages(images Images) error {
 				})
 				if err != nil {
 					failed++
-					log.Warnf("sync image %s: %s", images[k].String(), err)
+					log.Warnf("sync image [%s]: %s", images[k].String(), err)
 					return
 				}
 				success++
-				log.Debugf("sync image: %s done", images[k].String())
+				log.Debugf("sync image: [%s] done!", images[k].String())
 				if err := s.db.SaveUint32(images[k].Key(), newSum); err != nil {
 					log.Warnf("failed to save image [%s] checksum: %v", images[k].String(), err)
 				}
@@ -230,11 +231,11 @@ func (s *synca) syncImages(images Images) error {
 
 func (s *synca) PostRun() error {
 	report := fmt.Sprintf(`========================================
->> Sync Repo: k8s.gcr.io
+>> Sync Repo: %s
 >> Sync Total: %d
 >> Sync Failed: %d
 >> Sync Success: %d
->> Synced: %d`, s.r.total, s.r.failed, s.r.success, s.r.synced)
+>> Synced: %d`, gcrc.DefaultGcrRepo, s.r.total, s.r.failed, s.r.success, s.r.synced)
 	fmt.Println(report)
 	return nil
 }
@@ -265,7 +266,7 @@ func (s *synca) check(image *Image) (uint32, bool) {
 		log.Errorf("failed to get image [%s] checkSum, error: %s", imgFullName, err)
 		return 0, false
 	}
-	log.Debugf("%s diff: %v", imgFullName, diff)
+	log.Debugf("[%s] diff: %v", imgFullName, diff)
 	if !diff {
 		log.Debugf("image [%s] not changed, skip sync...", imgFullName)
 		return 0, false
@@ -275,7 +276,7 @@ func (s *synca) check(image *Image) (uint32, bool) {
 
 func (s *synca) pushOne(image *Image) error {
 	dst := fmt.Sprintf("%s/%s/%s:%s", s.opts.PushToRepo, s.opts.PushToNS, image.Name, image.Tag)
-	log.Debugf("syncing %s to %s ...", image.String(), dst)
+	log.Debugf("syncing [%s] to [%s] ...", image.String(), dst)
 	return s.gcr.Sync(image.String(), dst)
 }
 

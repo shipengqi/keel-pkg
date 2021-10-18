@@ -67,6 +67,11 @@ var requiredPrefix = []string{
 	"federation",
 }
 
+type RequireImages struct {
+	Names    []string `json:"names"`
+	Prefixes []string `json:"prefixes"`
+}
+
 type Options struct {
 	Username      string
 	Password      string
@@ -211,7 +216,6 @@ func (c *Client) Sync(src, dst string) error {
 		log.Debugf("sync %s error: %s", err)
 		return err
 	}
-	log.Debugf("sync %s done", src)
 	return nil
 }
 

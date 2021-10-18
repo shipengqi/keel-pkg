@@ -8,7 +8,12 @@ import (
 )
 
 const (
-	DefaultDBFile = "sync.bolt.db"
+	DefaultPushToRegistry = "registry.cn-hangzhou.aliyuncs.com"
+	DefaultPushToNs       = "keel"
+	DefaultDBFile         = "sync.bolt.db"
+	DefaultQueryLimit     = 10
+	DefaultLimit          = 5
+	DefaultRetryCount     = 5
 )
 
 func New() *cobra.Command {

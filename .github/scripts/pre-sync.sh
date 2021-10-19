@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-mkdir -p /var/run/keel/sync/
-cd /var/run/keel/sync/
+mkdir -p ${SYNC_HOME}
+cd ${SYNC_HOME}
 
-cp synctl /var/run/keel/sync/
+cp synctl ${SYNC_HOME}
 ls -lh
 
 docker run --rm -tid --name syncdb shipengqi/google_containers_sync_db top
-docker cp syncdb:/sync.bolt.db /var/run/keel/sync/
+docker cp syncdb:/sync.bolt.db ${SYNC_HOME}
 
 docker kill syncdb

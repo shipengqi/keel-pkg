@@ -3,10 +3,13 @@ package action
 import (
 	"context"
 	"fmt"
+	"github.com/docker/docker/registry"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 
@@ -79,6 +82,9 @@ func NewSyncAction(opts *SyncOptions) Interface {
 }
 
 func (s *synca) PreRun() error {
+	if err := s.auth(); err != nil {
+		return err
+	}
 	if err := s.db.CreatBucket(gcrc.DefaultGcrRepo); err != nil {
 		return err
 	}
@@ -278,6 +284,58 @@ func (s *synca) pushOne(image *Image) error {
 	dst := fmt.Sprintf("%s/%s/%s:%s", s.opts.PushToRepo, s.opts.PushToNS, image.Name, image.Tag)
 	log.Debugf("syncing [%s] to [%s] ...", image.String(), dst)
 	return s.gcr.Sync(image.String(), dst)
+}
+
+func (s *synca) auth() error {
+	authConf := &types.AuthConfig{
+		Username: s.opts.Username,
+		Password: s.opts.Password,
+	}
+
+	// https://github.com/moby/moby/blob/c3b3aedfa4ad51de0a2ebfd08a716f585390b512/daemon/daemon.go#L714
+	// https://github.com/moby/moby/blob/master/daemon/auth.go
+
+	if s.opts.PushToRepo == registry.IndexName {
+		authConf.ServerAddress = registry.IndexServer
+	} else {
+		authConf.ServerAddress = s.opts.PushToRepo
+	}
+	if !strings.HasPrefix(authConf.ServerAddress, "https://") && !strings.HasPrefix(authConf.ServerAddress, "http://") {
+		authConf.ServerAddress = "https://" + authConf.ServerAddress
+	}
+	service, err := registry.NewService(registry.ServiceOptions{})
+	if err != nil {
+		return err
+	}
+	var (
+		status      string
+		errContains = []string{"imeout", "dead"}
+	)
+	for count := s.opts.Retry; count > 0; count-- {
+		status, _, err = service.Auth(s.ctx, authConf, "")
+		if err != nil && contains(errContains, err.Error()) {
+			<-time.After(time.Second * 1)
+		} else {
+			break
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	if !strings.Contains(status, "Succeeded") {
+		return errors.Errorf("auth: %s", status)
+	}
+	return nil
+}
+
+func contains(s []string, searchterm string) bool {
+	for _, v := range s {
+		if strings.Contains(searchterm, v) {
+			return true
+		}
+	}
+	return false
 }
 
 func retry(count int, interval time.Duration, f func() error) error {

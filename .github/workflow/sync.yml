@@ -1,0 +1,71 @@
+name: sync k8s.gcr.io
+
+#on:
+#  push:
+#    branches:
+#      - master
+#  pull_request:
+#    branches: [ master ]
+#  schedule:
+#    - cron:  '20 1 * * *'
+
+jobs:
+  sync:
+    name: sync
+    env:
+      ALI_REGISTRY_USER: ${{ secrets.ALI_REGISTRY_USER }}
+      ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
+      DOCKERHUB_USER: shipengqi
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      SYNC_HOME: /var/run/keel/sync/
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Inspect docker
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      - name: Set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16' # The Go version to download (if necessary) and use.
+      - name: Inspect go
+        run: go version
+      - name: pre sync
+        run: |
+          make build-sync
+          /bin/bash .github/scripts/pre-sync.sh
+          ls -alh ${SYNC_HOME}
+          ${SYNC_HOME}/synctl sum ${SYNC_HOME}/sync.bolt.db | wc -l
+        env:
+          CGO_ENABLED: 0
+      - name: sync
+        id: sync
+        continue-on-error: true
+        run: |
+          sudo \
+          ${SYNC_HOME}/synctl sync \
+          --db ${SYNC_HOME}/sync.bolt.db \
+          -u ${{ secrets.ALI_REGISTRY_USER }} \
+          -p ${{ secrets.ALI_REGISTRY_PASS }} \
+          --push-ns=keel  \
+          --command-timeout ${TIMEOUT:=2h}  \
+          --limit ${LIMIT:=8}
+      - name: post sync success
+        run: |
+          bash .github/scripts/post-sync.sh
+          ls -alh ${SYNC_HOME}
+          ${SYNC_HOME}/synctl sum ${SYNC_HOME}/sync.bolt.db | wc -l
+        if: steps.sync.outcome == 'success'
+      - name: post sync failed
+        run: |
+          bash .github/scripts/post-sync.sh
+          ls -alh ${SYNC_HOME}
+        if: steps.sync.outcome != 'success'

@@ -6,29 +6,21 @@
     "etcd-arm64",
     "etcd-ppc64le",
     "etcd-s390x",
-    "flannel-amd64",
-    "flannel-arm",
-    "flannel-arm64",
-    "flannel-ppc64le",
     "coredns",
-    "nginx",
-    "nginx-ingress",
-    "nginx-ingress-controller",
-    "nginx-ingress-controller-amd64",
-    "nginx-ingress-controller-arm",
-    "nginx-ingress-controller-arm64",
-    "nginx-ingress-controller-ppc64le"
+    "nginx"
   ],
   "prefixes": [
     "kube",
     "k8s",
+    "flannel",
     "fluentd",
     "fluent-bit",
     "hyperkube",
-    "metrics",
+    "metrics-server",
     "pause",
     "alpine-iptables",
     "debian-iptables",
-    "federation"
+    "federation",
+    "nginx-ingress"
   ]
 }

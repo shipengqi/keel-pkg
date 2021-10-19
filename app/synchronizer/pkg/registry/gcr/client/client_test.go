@@ -37,7 +37,7 @@ func TestClient_AllTags(t *testing.T) {
 
 func TestClient_Sync(t *testing.T) {
 	opts := NewDefaultOptions()
-	opts.Username = "15670953622"
+	opts.Username = os.Getenv("ALI_REGISTRY_USER")
 	opts.Password = os.Getenv("ALI_REGISTRY_PASS")
 	c := New(opts)
 	images, err := c.AllImages()

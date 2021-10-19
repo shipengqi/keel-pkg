@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-docker login -u shipengqi -p ${DOCKER_PASS}
+docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}
 
 cd $HOME
-mkdir -p /var/run/keel/sync/build
-cd /var/run/keel/sync/build
+mkdir -p ${SYNC_HOME}/build
+cd ${SYNC_HOME}/build
 
-cp /var/run/keel/sync/sync.bolt.db .
+cp ${SYNC_HOME}/sync.bolt.db .
 ls -lh
 
 cat>Dockerfile<<EOF

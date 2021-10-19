@@ -1,7 +1,9 @@
 # keel-pkg
 keel tools for syncing images from **k8s.gcr.io** and packing kubernetes.tar.gz.
 
-![Actions workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/sync.yaml/badge.svg)
+![Actions sync workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/sync.yml/badge.svg)
+
+![Actions pack workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/pack.yml/badge.svg)
 
 ## Registry
 - [Google GCR](https://console.cloud.google.com/gcr/images/google-containers)

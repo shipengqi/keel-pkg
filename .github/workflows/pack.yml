@@ -1,0 +1,6 @@
+name: pack kubernetes.tar.gz
+
+on:
+  push:
+    branches:
+      - test

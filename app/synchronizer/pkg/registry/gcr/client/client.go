@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"github.com/shipengqi/keel-pkg/lib/imageset"
 	"hash/crc32"
 	"net/http"
 	"strings"
@@ -33,45 +34,6 @@ const (
 	_defaultGcrImagesListAPI = "https://k8s.gcr.io/v2/tags/list"
 )
 
-var requiredImages = []string{
-	"etcd",
-	"etcd-amd64",
-	"etcd-arm",
-	"etcd-arm64",
-	"etcd-ppc64le",
-	"etcd-s390x",
-	"flannel-amd64",
-	"flannel-arm",
-	"flannel-arm64",
-	"flannel-ppc64le",
-	"coredns",
-	"nginx",
-	"nginx-ingress",
-	"nginx-ingress-controller",
-	"nginx-ingress-controller-amd64",
-	"nginx-ingress-controller-arm",
-	"nginx-ingress-controller-arm64",
-	"nginx-ingress-controller-ppc64le",
-}
-
-var requiredPrefix = []string{
-	"kube",
-	"k8s",
-	"fluentd",
-	"fluent-bit",
-	"hyperkube",
-	"metrics",
-	"pause",
-	"alpine-iptables",
-	"debian-iptables",
-	"federation",
-}
-
-type RequireImages struct {
-	Names    []string `json:"names"`
-	Prefixes []string `json:"prefixes"`
-}
-
 type Options struct {
 	Username      string
 	Password      string
@@ -82,6 +44,7 @@ type Options struct {
 	ReqTimeout    time.Duration
 	PushTimeout   time.Duration
 	Ctx           context.Context
+	ImageSet      *imageset.ImageSet
 	AdditionalNS  []string
 }
 
@@ -136,6 +99,8 @@ func (c *Client) AllImages() ([]string, error) {
 	}
 
 	var filters []string
+	requiredImages := c.opts.ImageSet.Sync.Names
+	requiredPrefix := c.opts.ImageSet.Sync.Prefixes
 	// filter useful images
 	for n := range allBaseNames {
 		found := false

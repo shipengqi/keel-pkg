@@ -24,13 +24,13 @@ const (
 
 type SyncOptions struct {
 	*gcrc.Options
-	Db         string
-	PushToRepo string
-	PushToNS   string
-	Images     string
-	Limit      int
-	QueryLimit int
-	CmdTimeout time.Duration
+	Db           string
+	PushToRepo   string
+	PushToNS     string
+	ImageSetFile string
+	Limit        int
+	QueryLimit   int
+	CmdTimeout   time.Duration
 }
 
 type reports struct {

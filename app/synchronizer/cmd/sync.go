@@ -1,23 +1,44 @@
 package cmd
 
 import (
+	"os"
 	"time"
 
+	jsoniter "github.com/json-iterator/go"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
 	"github.com/shipengqi/keel-pkg/app/synchronizer/action"
 	"github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
+	"github.com/shipengqi/keel-pkg/lib/imageset"
 )
 
 func NewSyncCommand() *cobra.Command {
 	o := &action.SyncOptions{
 		Options: client.NewDefaultOptions(),
 	}
-
 	c := &cobra.Command{
 		Use:   "sync [options]",
 		Short: "Sync images",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if o.ImageSetFile == "" {
+				return errors.New("invalid flag --image-set")
+			}
+			setBytes, err := os.ReadFile(o.ImageSetFile)
+			if err != nil {
+				return err
+			}
+			set := &imageset.ImageSet{
+				Sync: &imageset.SyncSet{},
+			}
+			err = jsoniter.Unmarshal(setBytes, set)
+			if err != nil {
+				return errors.Wrap(err, "unmarshal")
+			}
+			o.ImageSet = set
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			a := action.NewSyncAction(o)
 			return action.Execute(a)
@@ -68,8 +89,8 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		&o.AdditionalNS, "addition-ns", nil,
 		"Additional namespaces to sync")
 	f.StringVar(
-		&o.Images, "images", "",
-		"The location of images file",
+		&o.ImageSetFile, "image-set", "image_set.json",
+		"The location of image-set file",
 	)
 }
 

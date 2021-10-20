@@ -43,10 +43,11 @@ type reports struct {
 type synca struct {
 	*action
 
-	r    *reports
-	opts *SyncOptions
-	gcr  *gcrc.Client
-	db   *boltdb.Boltdb
+	r          *reports
+	opts       *SyncOptions
+	gcr        *gcrc.Client
+	db         *boltdb.Boltdb
+	cancelFunc context.CancelFunc
 }
 
 func NewSyncAction(opts *SyncOptions) Interface {
@@ -67,18 +68,21 @@ func NewSyncAction(opts *SyncOptions) Interface {
 		action: &action{
 			name: NameSync,
 			ctx:  ctx,
-			close: func() error {
-				cancel()
-				return nil
-			},
 		},
-		r:    &reports{},
-		opts: opts,
-		gcr:  gcrc.New(opts.Options),
-		db:   db,
+		r:          &reports{},
+		opts:       opts,
+		gcr:        gcrc.New(opts.Options),
+		db:         db,
+		cancelFunc: cancel,
 	}
 
 	return a
+}
+
+func (s *synca) Close() error {
+	log.Debugf("action [%s] closing ...", s.name)
+	s.cancelFunc()
+	return s.db.Close()
 }
 
 func (s *synca) PreRun() error {
@@ -158,7 +162,18 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 					return
 				}
 				log.Debugf("fetch tags count: %d, [%s] ...", len(tags), pub)
+
+				excludeStrs := s.opts.ImageSet.Exclude
 				for _, tag := range tags {
+					excluded := false
+					for sk := range excludeStrs {
+						if strings.Contains(tag, excludeStrs[sk]) {
+							excluded = true
+						}
+					}
+					if excluded {
+						continue
+					}
 					imgC <- Image{
 						Name: pub,
 						Tag:  tag,
@@ -172,7 +187,6 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 		}
 	}
 	wg.Wait()
-	log.Infof("fetched all images, total: %d", len(images))
 	return images, nil
 }
 
@@ -274,7 +288,7 @@ func (s *synca) check(image *Image) (uint32, bool) {
 	}
 	log.Debugf("[%s] diff: %v", imgFullName, diff)
 	if !diff {
-		log.Debugf("image [%s] not changed, skip sync...", imgFullName)
+		log.Debugf("image [%s] not changed, skip sync ...", imgFullName)
 		return 0, false
 	}
 	return bodySum, true

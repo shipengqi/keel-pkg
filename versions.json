@@ -1,0 +1,20 @@
+{
+  "arch": "amd64",
+  "images": [
+    {"name":  "etcd", "tag": "3.4.7"},
+    {"name":  "flannel", "tag": "0.5.5"},
+    {"name":  "kube-proxy", "tag": "v1.22.2"},
+    {"name":  "kube-apiserver", "tag": "v1.22.2"},
+    {"name":  "kube-controller-manager", "tag": "v1.22.2"},
+    {"name":  "kube-scheduler", "tag": "3.4.7"},
+    {"name":  "coredns", "tag": "1.7.0"},
+    {"name":  "metrics-server", "tag": "1.7.0"}
+  ],
+  "components": [
+    {"name":  "containerd", "tag": "1.5.7"},
+    {"name":  "runc", "tag": "1.0.2"},
+    {"name":  "crictl", "tag": "1.22.0"},
+    {"name":  "kubectl", "tag": "1.22.2"},
+    {"name":  "kubelet", "tag": "1.22.2"}
+  ]
+}

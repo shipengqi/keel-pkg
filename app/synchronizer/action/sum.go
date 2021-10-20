@@ -29,14 +29,16 @@ func NewSumAction(dbUri string) Interface {
 	a := &suma{
 		action: &action{
 			name: NameSum,
-			close: func() error {
-				return db.Close()
-			},
 		},
 		dbUri: dbUri,
 		db:    db,
 	}
 	return a
+}
+
+func (s *suma) Close() error {
+	log.Debugf("action [%s] closing ...", s.name)
+	return s.db.Close()
 }
 
 func (s *suma) Run() error {

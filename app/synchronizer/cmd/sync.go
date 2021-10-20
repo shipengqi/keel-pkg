@@ -11,10 +11,10 @@ import (
 
 	"github.com/shipengqi/keel-pkg/app/synchronizer/action"
 	"github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
-	"github.com/shipengqi/keel-pkg/lib/imageset"
+	"github.com/shipengqi/keel-pkg/lib/deps"
 )
 
-func NewSyncCommand() *cobra.Command {
+func NewSyncCommand(done chan error) *cobra.Command {
 	o := &action.SyncOptions{
 		Options: client.NewDefaultOptions(),
 	}
@@ -29,9 +29,7 @@ func NewSyncCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			set := &imageset.ImageSet{
-				Sync: &imageset.SyncSet{},
-			}
+			set := &deps.ImageSet{}
 			err = jsoniter.Unmarshal(setBytes, set)
 			if err != nil {
 				return errors.Wrap(err, "unmarshal")
@@ -41,6 +39,7 @@ func NewSyncCommand() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			a := action.NewSyncAction(o)
+			go receiver(a, done)
 			return action.Execute(a)
 		},
 	}
@@ -66,11 +65,11 @@ func addSyncFlags(f *pflag.FlagSet, o *action.SyncOptions) {
 		"Set http query limit",
 	)
 	f.IntVar(
-		&o.Limit, "limit", DefaultQueryLimit,
+		&o.Limit, "limit", DefaultLimit,
 		"Set sync limit",
 	)
 	f.DurationVar(
-		&o.CmdTimeout, "command-timeout", DefaultLimit,
+		&o.CmdTimeout, "command-timeout", 0,
 		"Set timeout for the command execution",
 	)
 	f.DurationVar(

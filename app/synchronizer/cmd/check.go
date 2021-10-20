@@ -7,7 +7,7 @@ import (
 	gcrc "github.com/shipengqi/keel-pkg/app/synchronizer/pkg/registry/gcr/client"
 )
 
-func NewCheckCommand() *cobra.Command {
+func NewCheckCommand(done chan error) *cobra.Command {
 	o := &action.CheckOptions{
 		Options: gcrc.NewDefaultOptions(),
 	}
@@ -18,6 +18,7 @@ func NewCheckCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.CheckSum = args[0]
 			a := action.NewCheckAction(o)
+			go receiver(a, done)
 			return action.Execute(a)
 		},
 	}

@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/shipengqi/keel-pkg/lib/imageset"
 	"hash/crc32"
 	"net/http"
 	"strings"
@@ -19,6 +18,7 @@ import (
 	specv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
 
+	"github.com/shipengqi/keel-pkg/lib/deps"
 	"github.com/shipengqi/keel-pkg/lib/log"
 )
 
@@ -44,7 +44,7 @@ type Options struct {
 	ReqTimeout    time.Duration
 	PushTimeout   time.Duration
 	Ctx           context.Context
-	ImageSet      *imageset.ImageSet
+	ImageSet      *deps.ImageSet
 	AdditionalNS  []string
 }
 
@@ -99,8 +99,8 @@ func (c *Client) AllImages() ([]string, error) {
 	}
 
 	var filters []string
-	requiredImages := c.opts.ImageSet.Sync.Names
-	requiredPrefix := c.opts.ImageSet.Sync.Prefixes
+	requiredImages := c.opts.ImageSet.Names
+	requiredPrefix := c.opts.ImageSet.Prefixes
 	// filter useful images
 	for n := range allBaseNames {
 		found := false

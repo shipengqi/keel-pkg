@@ -1,14 +1,13 @@
 package main
 
 import (
+	"github.com/shipengqi/keel-pkg/app/packer/cmd"
+	"github.com/shipengqi/keel-pkg/lib/log"
+	"github.com/shipengqi/keel-pkg/lib/recovery"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
-
-	"github.com/shipengqi/keel-pkg/app/packer/cmd"
-	"github.com/shipengqi/keel-pkg/lib/log"
-	"github.com/shipengqi/keel-pkg/lib/recovery"
 )
 
 const (
@@ -37,7 +36,7 @@ func main() {
 	for {
 		select {
 		case sig := <-quit:
-			log.Debugf("get a signal %s", sig.String())
+			log.Debugf("get a signal %s, quit!!!", sig.String())
 			code = ExitCodeSignal
 			return
 		case err := <-done:

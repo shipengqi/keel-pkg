@@ -26,7 +26,7 @@ build-sync:
 
 build-pack:
 	@echo "building command: $(PACK_CMD) ..."
-	@CGO_ENABLED=0 go build -mod=mod -o packer -ldflags \
+	@CGO_ENABLED=0 go build -trimpath -mod=mod -o packer -ldflags \
 	"-X '$(packer_cmd_path).Version=$(version)' -X '$(packer_cmd_path).BuildTime=$(build_time)' -X '$(packer_cmd_path).GitCommit=$(build_commit)'" \
 	./app/packer/
 

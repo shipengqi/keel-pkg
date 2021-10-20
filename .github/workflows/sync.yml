@@ -57,7 +57,8 @@ jobs:
           -p ${{ secrets.ALI_REGISTRY_PASS }} \
           --push-ns=keel  \
           --command-timeout ${TIMEOUT:=2h}  \
-          --limit ${LIMIT:=8}
+          --limit ${LIMIT:=3} \
+          --image-set ${SYNC_HOME}/image-set.json
       - name: post sync success
         run: |
           bash .github/scripts/post-sync.sh

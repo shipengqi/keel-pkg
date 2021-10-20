@@ -2,9 +2,8 @@ package action
 
 import (
 	"context"
-	"strings"
-
 	"github.com/shipengqi/keel-pkg/lib/log"
+	"strings"
 )
 
 type CloseFunc func() error
@@ -15,13 +14,12 @@ type Interface interface {
 	Run() error
 	PostRun() error
 	Ctx() context.Context
-	Close() CloseFunc
+	Close() error
 }
 
 type action struct {
 	name  string
 	ctx   context.Context
-	close CloseFunc
 }
 
 func (a *action) Name() string {
@@ -47,16 +45,12 @@ func (a *action) Ctx() context.Context {
 	return a.ctx
 }
 
-func (a *action) Close() CloseFunc {
+func (a *action) Close() error {
 	return nil
 }
 
 func Execute(a Interface) error {
-	defer func() {
-		if a.Close() != nil {
-			a.Close()
-		}
-	}()
+	defer func() { _ = a.Close() }()
 	err := a.PreRun()
 	if err != nil {
 		return err

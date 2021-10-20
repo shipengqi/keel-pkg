@@ -1,29 +1,30 @@
 {
-  "sync": {
-    "names": [
-      "etcd",
-      "etcd-amd64",
-      "etcd-arm",
-      "etcd-arm64",
-      "etcd-ppc64le",
-      "etcd-s390x",
-      "coredns",
-      "nginx"
-    ],
-    "prefixes": [
-      "kube",
-      "k8s",
-      "flannel",
-      "fluentd",
-      "fluent-bit",
-      "hyperkube",
-      "metrics-server",
-      "pause",
-      "alpine-iptables",
-      "debian-iptables",
-      "federation",
-      "nginx-ingress"
-    ]
-  },
-  "install": []
+  "names": [
+    "etcd",
+    "etcd-amd64",
+    "etcd-arm",
+    "etcd-arm64",
+    "etcd-ppc64le",
+    "etcd-s390x",
+    "coredns",
+    "nginx"
+  ],
+  "prefixes": [
+    "kube",
+    "k8s",
+    "flannel",
+    "fluentd",
+    "fluent-bit",
+    "hyperkube",
+    "metrics-server",
+    "pause",
+    "alpine-iptables",
+    "debian-iptables",
+    "federation",
+    "nginx-ingress"
+  ],
+  "exclude": [
+    "-beta",
+    "-alpha"
+  ]
 }

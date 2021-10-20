@@ -48,14 +48,19 @@ func NewCheckAction(opts *CheckOptions) Interface {
 	return a
 }
 
+func (c *checka) Close() error {
+	log.Debugf("action [%s] closing ...", c.name)
+	return c.db.Close()
+}
+
 func (c *checka) Run() error {
-	log.Infof("check if [] needs to be synchronized", c.opts.CheckSum)
+	log.Infof("check if [%s] needs to be synchronized", c.opts.CheckSum)
 	if err := c.db.Db().View(func(tx *bolt.Tx) error {
 		return tx.ForEach(func(bName []byte, b *bolt.Bucket) error {
 			cur := b.Cursor()
 			for k, v := cur.First(); k != nil; k, v = cur.Next() {
 				if len(v) != int(types.Uint32) {
-					log.Warnf("wrong bucket:%s key=%s", bName, k)
+					log.Warnf("wrong bucket [%s] key=%s", bName, k)
 					continue
 				}
 				dbKey := fmt.Sprintf("%s/%s", bName, k)

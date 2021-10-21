@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+SYNC_HOME=${HOME}/sync
 mkdir -p ${SYNC_HOME}
 cp synctl ${SYNC_HOME}
 cp image_set.json ${SYNC_HOME}

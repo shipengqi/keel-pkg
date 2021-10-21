@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+PACK_HOME=${HOME}/pack
 cd ${PACK_HOME}
 
 chmod 755 kubectl kubelet

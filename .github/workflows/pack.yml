@@ -20,7 +20,6 @@ jobs:
       KUBERNETES_VERSION: 1.22.2
       ARCH: amd64
       BRTA: ${{ github.event.inputs.beta }}
-      PACK_HOME: /var/run/keel/pack
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,10 +48,15 @@ jobs:
         id: pack
         continue-on-error: true
         run: |
-          echo "pack testing"
+          sudo \
+          ${HOME}/pack/packer \
+          -u ${ALI_REGISTRY_USER} \
+          -p ${ALI_REGISTRY_PASS} \
+          --version-config ${HOME}/pack/versions.json \
       - name: post pack success
         run: |
           echo "pack done!"
+          bash .github/scripts/post-pack.sh
         if: steps.sync.outcome == 'success'
       - name: post pack failed
         run: |

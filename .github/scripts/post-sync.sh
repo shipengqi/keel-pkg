@@ -3,6 +3,7 @@ set -e
 
 docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}
 
+SYNC_HOME=${HOME}/sync
 mkdir -p ${SYNC_HOME}/build
 cp sync.bolt.db ${SYNC_HOME}/build/
 cp image_set.json ${SYNC_HOME}/build/

@@ -18,7 +18,6 @@ jobs:
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
       DOCKERHUB_USER: shipengqi
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-      SYNC_HOME: /var/run/keel/sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,7 +42,7 @@ jobs:
         run: |
           make build-sync
           /bin/bash .github/scripts/pre-sync.sh
-          ${SYNC_HOME}/synctl sum ${SYNC_HOME}/sync.bolt.db | wc -l
+          ${HOME}/sync/synctl sum ${HOME}/sync/sync.bolt.db | wc -l
         env:
           CGO_ENABLED: 0
       - name: sync
@@ -51,22 +50,22 @@ jobs:
         continue-on-error: true
         run: |
           sudo \
-          ${SYNC_HOME}/synctl sync \
-          --db ${SYNC_HOME}/sync.bolt.db \
+          ${HOME}/sync/synctl sync \
+          --db ${HOME}/sync/sync.bolt.db \
           -u ${{ secrets.ALI_REGISTRY_USER }} \
           -p ${{ secrets.ALI_REGISTRY_PASS }} \
           --push-ns=keel  \
           --command-timeout ${TIMEOUT:=2h}  \
           --limit ${LIMIT:=3} \
-          --image-set ${SYNC_HOME}/image-set.json
+          --image-set ${HOME}/sync/image-set.json
       - name: post sync success
         run: |
           bash .github/scripts/post-sync.sh
-          ls -alh ${SYNC_HOME}
-          ${SYNC_HOME}/synctl sum ${SYNC_HOME}/sync.bolt.db | wc -l
+          ls -alh ${HOME}/sync
+          ${HOME}/sync/synctl sum ${HOME}/sync/sync.bolt.db | wc -l
         if: steps.sync.outcome == 'success'
       - name: post sync failed
         run: |
           bash .github/scripts/post-sync.sh
-          ls -alh ${SYNC_HOME}
+          ls -alh ${HOME}/sync
         if: steps.sync.outcome != 'success'

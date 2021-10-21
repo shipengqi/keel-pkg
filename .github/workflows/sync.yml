@@ -60,12 +60,12 @@ jobs:
           --image-set ${HOME}/sync/image-set.json
       - name: post sync success
         run: |
-          bash .github/scripts/post-sync.sh
+          /bin/bash .github/scripts/post-sync.sh
           ls -alh ${HOME}/sync
           ${HOME}/sync/synctl sum ${HOME}/sync/sync.bolt.db | wc -l
         if: steps.sync.outcome == 'success'
       - name: post sync failed
         run: |
-          bash .github/scripts/post-sync.sh
+          /bin/bash .github/scripts/post-sync.sh
           ls -alh ${HOME}/sync
         if: steps.sync.outcome != 'success'

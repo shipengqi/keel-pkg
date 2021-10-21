@@ -56,7 +56,7 @@ jobs:
       - name: post pack success
         run: |
           echo "pack done!"
-          bash .github/scripts/post-pack.sh
+          /bin/bash .github/scripts/post-pack.sh
         if: steps.sync.outcome == 'success'
       - name: post pack failed
         run: |

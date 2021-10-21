@@ -54,10 +54,6 @@ jobs:
         run: |
           make build-pack
           /bin/bash .github/scripts/pre-pack.sh
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          df -h
       - name: pack
         id: pack
         continue-on-error: false

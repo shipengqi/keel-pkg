@@ -5,7 +5,7 @@ PACK_HOME=${HOME}/pack
 cd ${PACK_HOME}
 ls -lh ${PACK_HOME}
 
-chmod 755 kubectl kubelet
+sudo chmod 755 kubectl kubelet
 mkdir -p ${PACK_HOME}/src/kubernetes/bin/
 mv kubectl ${PACK_HOME}/src/kubernetes/bin/
 mv kubelet ${PACK_HOME}/src/kubernetes/bin/
@@ -16,7 +16,7 @@ tar -xf containerd-*.tar.gz -C ${PACK_HOME}/src/runtime/containerd/
 tar -xf crictl-*.tar.gz -C ${PACK_HOME}/src/runtime/containerd/bin/
 rm -rf containerd-*.tar.gz
 rm -rf crictl-*.tar.gz
-chmod 755 runc.${PACK_ARCH}
+sudo chmod 755 runc.${PACK_ARCH}
 mv runc.${PACK_ARCH} ${PACK_HOME}/src/runtime/containerd/bin/
 ls -lh ${PACK_HOME}/src/runtime/containerd/bin/
 

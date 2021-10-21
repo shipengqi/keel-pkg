@@ -11,7 +11,12 @@ mv packer ${PACK_HOME}
 ls -lh ${PACK_HOME}
 
 # workaround https://github.com/actions/virtual-environments/issues/2875
-# sudo rm -rf /usr/share/dotnet
+sudo rm -rf /usr/share/dotnet
 # sudo rm -rf /opt/ghc
 # sudo rm -rf "/usr/local/share/boost"
 # sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+sudo swapoff -a
+sudo rm -f /swapfile
+sudo apt clean
+df -h

@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - test
+      - main
   pull_request:
     branches: [ main ]
-#  schedule:
-#    - cron:  '20 1 * * *'
+  schedule:
+    - cron:  '20 1 * * *'
 
 jobs:
   sync:
@@ -47,7 +47,7 @@ jobs:
           CGO_ENABLED: 0
       - name: sync
         id: sync
-        continue-on-error: true
+        continue-on-error: false
         run: |
           sudo \
           ${HOME}/sync/synctl sync \
@@ -57,8 +57,9 @@ jobs:
           --push-ns=keel  \
           --command-timeout ${TIMEOUT:=2h}  \
           --limit ${LIMIT:=3} \
-          --image-set ${HOME}/sync/image-set.json
+          --image-set ${HOME}/sync/image_set.json
       - name: post sync success
+        continue-on-error: false
         run: |
           /bin/bash .github/scripts/post-sync.sh
           ls -alh ${HOME}/sync

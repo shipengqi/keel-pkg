@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       beta: true
+  push:
+    branches:
+      - test
   release:
     types: [created]
 
@@ -46,7 +49,7 @@ jobs:
           /bin/bash .github/scripts/pre-sync.sh
       - name: pack
         id: pack
-        continue-on-error: true
+        continue-on-error: false
         run: |
           sudo \
           ${HOME}/pack/packer \
@@ -54,6 +57,7 @@ jobs:
           -p ${ALI_REGISTRY_PASS} \
           --version-config ${HOME}/pack/versions.json \
       - name: post pack success
+        continue-on-error: false
         run: |
           echo "pack done!"
           /bin/bash .github/scripts/post-pack.sh

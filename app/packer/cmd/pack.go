@@ -19,7 +19,7 @@ const (
 func pack(o *packOptions, set *deps.Versions) error {
 	list := uriTmplList(set)
 	for i := range list {
-		err := download(list[i], o.DownloadOutput)
+		err := download(o.DownloadOutput, list[i])
 		if err != nil {
 			return err
 		}

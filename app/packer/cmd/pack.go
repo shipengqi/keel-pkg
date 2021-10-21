@@ -31,8 +31,7 @@ func pack(o *packOptions, set *deps.Versions) error {
 		normalized := normalizeImgName(requiredImages[i].Name, requiredImages[i].Tag, set.Arch)
 		err = pull(o.ImagesOutput, normalized)
 		if err != nil {
-			log.Warnf(err.Error())
-			continue
+			return err
 		}
 	}
 	return nil

@@ -8,8 +8,7 @@ cp packer ${PACK_HOME}
 cp versions.json ${PACK_HOME}
 cp -rf package/* ${PACK_HOME}/src
 
-cd ${PACK_HOME}
-ls -lh
+ls -lh ${PACK_HOME}
 
 # workaround https://github.com/actions/virtual-environments/issues/2875
 # sudo rm -rf /usr/share/dotnet

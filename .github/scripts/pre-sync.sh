@@ -10,5 +10,4 @@ docker run --rm -tid --name syncdb shipengqi/google_containers_sync_db top
 docker cp syncdb:/sync.bolt.db ${SYNC_HOME}
 docker kill syncdb
 
-cd ${SYNC_HOME}
-ls -lh
+ls -lh  ${SYNC_HOME}

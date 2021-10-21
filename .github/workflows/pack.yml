@@ -44,7 +44,7 @@ jobs:
       - name: pre pack
         run: |
           make build-pack
-          /bin/bash .github/scripts/pre-sync.sh
+          /bin/bash .github/scripts/pre-pack.sh
       - name: pack
         id: pack
         continue-on-error: false
@@ -59,8 +59,8 @@ jobs:
         run: |
           echo "pack done!"
           /bin/bash .github/scripts/post-pack.sh
-        if: steps.sync.outcome == 'success'
+        if: steps.pack.outcome == 'success'
       - name: post pack failed
         run: |
           echo "pack failed!!!"
-        if: steps.sync.outcome != 'success'
+        if: steps.pack.outcome != 'success'

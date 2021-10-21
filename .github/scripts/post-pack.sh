@@ -24,9 +24,9 @@ ls -lh ${PACK_HOME}/src/runtime/containerd/bin/
 
 echo "Coping images"
 mkdir -p ${PACK_HOME}/src/images
-sudo chmod 755 ./images
-cp ./images/* ${PACK_HOME}/src/images
+sudo cp ./images/* ${PACK_HOME}/src/images
 rm -rf ./images
+sudo chmod 755 ${PACK_HOME}/src/images/*
 ls -lh ${PACK_HOME}/src/images
 
 TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}.tar.gz

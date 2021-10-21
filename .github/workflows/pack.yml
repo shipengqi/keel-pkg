@@ -45,6 +45,10 @@ jobs:
         run: |
           make build-pack
           /bin/bash .github/scripts/pre-pack.sh
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          df -h
       - name: pack
         id: pack
         continue-on-error: false
@@ -57,8 +61,8 @@ jobs:
       - name: post pack success
         continue-on-error: false
         run: |
-          echo "pack done!"
           /bin/bash .github/scripts/post-pack.sh
+          echo "pack done!"
         if: steps.pack.outcome == 'success'
       - name: post pack failed
         run: |

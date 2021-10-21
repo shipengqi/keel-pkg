@@ -3,6 +3,7 @@ set -e
 
 PACK_HOME=${HOME}/pack
 cd ${PACK_HOME}
+ls -lh ${PACK_HOME}
 
 chmod 755 kubectl kubelet
 mkdir -p ${PACK_HOME}/src/kubernetes/bin/

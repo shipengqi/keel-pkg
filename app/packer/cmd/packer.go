@@ -49,7 +49,11 @@ func New() *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "unmarshal")
 			}
-			return fsutil.MustMkDir(o.ImagesOutput)
+			err = fsutil.MustMkDir(o.ImagesOutput)
+			if err != nil {
+				return err
+			}
+			return fsutil.MustMkDir(o.DownloadOutput)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return pack(o, set)

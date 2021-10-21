@@ -30,12 +30,14 @@ cd ${PACK_HOME}/src
 
 TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}.tar.gz
 
-if [ -n "${PACK_VERSION}" ];then
-    TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}-${PACK_VERSION}.tar.gz
+if [ -n "${BETA_VERSION}" ];then
+    TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}-${BETA_VERSION}.tar.gz
 fi
 
 echo "Packing ${TAR_NAME}"
 tar -czvf ${PACK_HOME}/${TAR_NAME} .
+cd ${PACK_HOME}
+rm -rf ./src
 echo "Pack ${TAR_NAME} done!"
 
 ./packer push -k ${PACK_HOME} -s ${PACK_HOME} --pkg-uri ${PACK_HOME}/${TAR_NAME}

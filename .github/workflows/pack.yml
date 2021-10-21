@@ -5,11 +5,18 @@ on:
     types: [created]
   workflow_dispatch:
     inputs:
-      version:
+      betaversion:
         default: "beta"
-        description: "set version"
+        description: "set beat version"
         required: false
-
+      arch:
+        default: "amd64"
+        description: "set arch"
+        required: false
+      kubeversion:
+        default: "1.22.2"
+        description: "set kube version"
+        required: false
 jobs:
   pack:
     name: pack
@@ -20,9 +27,9 @@ jobs:
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
       QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
       QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
-      KUBERNETES_VERSION: 1.22.2
-      PACK_ARCH: amd64
-      PACK_VERSION: ${{ github.event.inputs.version }}
+      KUBERNETES_VERSION: ${{ github.event.inputs.kubeversion }}
+      PACK_ARCH: ${{ github.event.inputs.arch }}
+      BETA_VERSION: ${{ github.event.inputs.betaversion }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

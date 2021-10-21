@@ -82,7 +82,7 @@ func pull(output, imgName string) error {
 }
 
 func download(output, uri string) error {
-	log.Debugf("wget [%s] ...", uri)
+	log.Debugf("wget [%s] -P [%s] ...", uri, output)
 	_, stderr, _, err := cliutil.Exec("wget", []string{uri, "-P", output})
 	if err != nil {
 		log.Debugf("wget [%s]: %v", uri, stderr)

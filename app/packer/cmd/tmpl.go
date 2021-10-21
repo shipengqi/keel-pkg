@@ -24,7 +24,8 @@ var (
 )
 
 func normalizeImgName(name, tag, arch string) string {
-	if name == CorednsImageName { // image name needs to add arch string, except for the coredns image
+	// image name needs to add arch string, except for the coredns, metrics image
+	if name == CorednsImageName {
 		return fmt.Sprintf("%s:%s", name, tag)
 	}
 	return fmt.Sprintf("%s-%s:%s", name, arch, tag)

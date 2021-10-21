@@ -1,13 +1,11 @@
 name: pack kubernetes.tar.gz
 
 on:
-  push:
-    branches:
-      - test
-#  pull_request:
-#    branches: [ master ]
-#  schedule:
-#    - cron:  '20 1 * * *'
+  workflow_dispatch:
+    inputs:
+      beta: true
+  release:
+    types: [created]
 
 jobs:
   pack:
@@ -17,8 +15,12 @@ jobs:
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
       DOCKERHUB_USER: shipengqi
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+      QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
       KUBERNETES_VERSION: 1.22.2
-      PACK_HOME: /var/run/keel/pack/
+      ARCH: amd64
+      BRTA: ${{ github.event.inputs.beta }}
+      PACK_HOME: /var/run/keel/pack
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

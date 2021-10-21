@@ -10,6 +10,7 @@ import (
 
 const (
 	DefaultRegistry     = "registry.cn-hangzhou.aliyuncs.com"
+	DefaultRegistryNs   = "keel"
 	DefaultImagesOutput = "/var/run/keel/pack/images"
 )
 
@@ -50,7 +51,7 @@ func login(user, pass string) error {
 }
 
 func pull(output, imgName string) error {
-	imgFullName := fmt.Sprintf("%s/%s", DefaultRegistry, imgName)
+	imgFullName := fmt.Sprintf("%s/%s/%s", DefaultRegistry, DefaultRegistryNs, imgName)
 	log.Debugf("pulling [%s] ...", imgFullName)
 	_, stderr, _, err := cliutil.Exec("docker", []string{"pull", imgFullName})
 	if err != nil {
@@ -66,7 +67,7 @@ func pull(output, imgName string) error {
 		log.Debugf("save [%s]: %v", tarName, stderr)
 		return err
 	}
-	log.Debugf("save[ %s] done!", tarName)
+	log.Debugf("save [%s] done!", tarName)
 	return nil
 }
 

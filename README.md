@@ -13,6 +13,23 @@ keel tools for syncing images from **k8s.gcr.io** and packing kubernetes.tar.gz.
   
 ## Usage
 ```bash
+$ ./packer -h
+Pack kubernetes.tar.gz
+
+Usage:
+  packer [options]
+
+Flags:
+  -u, --username string            The username of the registry to be pushed
+  -p, --password string            The password of the registry to be pushed
+      --command-timeout duration   Set timeout for the command execution
+      --version-config string      The location of versions config file (default "versions.json")
+  -o, --image-output string        The location of images output (default "/var/run/keel/pack/images")
+  -h, --help                       help for packer
+  -v, --version                    version for packer
+
+
+
 $ ./synctl sync -h
 Sync images
 
@@ -32,10 +49,12 @@ Flags:
       --retry int                  Retry count. (default 5)
       --retry-interval duration    Retry interval (default 5s)
       --addition-ns strings        Additional namespaces to sync
+      --image-set string           The location of image-set file (default "image_set.json")
   -h, --help                       help for sync
 ```
 
 ## Example
+sync images:
 ```bash
 $ ./synctl sync \
 --db ${HOME}/sync.bolt.db \
@@ -44,6 +63,11 @@ $ ./synctl sync \
 --push-ns=${ REGISTRY_NAMESPACE }  \
 --command-timeout ${TIMEOUT:=2h}  \
 --limit ${LIMIT:=8}
+```
+
+pack kubernetes.tar.gz:
+```bash
+
 ```
 
 ## How to build

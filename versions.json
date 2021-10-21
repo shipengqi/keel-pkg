@@ -6,9 +6,9 @@
     {"name":  "kube-proxy", "tag": "v1.22.2"},
     {"name":  "kube-apiserver", "tag": "v1.22.2"},
     {"name":  "kube-controller-manager", "tag": "v1.22.2"},
-    {"name":  "kube-scheduler", "tag": "3.4.7"},
+    {"name":  "kube-scheduler", "tag": "v1.22.2"},
     {"name":  "coredns", "tag": "1.7.0"},
-    {"name":  "metrics-server", "tag": "1.7.0"}
+    {"name":  "metrics-server", "tag": "v0.3.6"}
   ],
   "components": [
     {"name":  "containerd", "tag": "1.5.7"},

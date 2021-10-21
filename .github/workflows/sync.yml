@@ -1,11 +1,12 @@
 name: sync k8s.gcr.io
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - test
-#  pull_request:
-#    branches: [ master ]
+  pull_request:
+    branches: [ main ]
 #  schedule:
 #    - cron:  '20 1 * * *'
 
@@ -17,7 +18,7 @@ jobs:
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
       DOCKERHUB_USER: shipengqi
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-      SYNC_HOME: /var/run/keel/sync/
+      SYNC_HOME: /var/run/keel/sync
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

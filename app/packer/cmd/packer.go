@@ -32,8 +32,8 @@ func New() *cobra.Command {
 	set := &deps.Versions{}
 
 	c := &cobra.Command{
-		Use:     "packer",
-		Short:   "keel packer for kubernetes",
+		Use:     "packer [options]",
+		Short:   "Pack kubernetes.tar.gz",
 		Version: Version,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if o.VersionsFile == "" {
@@ -57,11 +57,13 @@ func New() *cobra.Command {
 	flags.SortFlags = false
 	c.DisableFlagsInUseLine = true
 
-	addPackFlags(flags, o)
 	addRegistryClientFlags(flags, o)
+	addPackFlags(flags, o)
 
 	c.SetVersionTemplate(fmtutil.VersionTmpl("Keel Packer",
 		Version, GitCommit, BuildTime))
+
+	c.AddCommand(newPushCommand())
 	return c
 }
 
@@ -71,8 +73,8 @@ func addPackFlags(f *pflag.FlagSet, o *packOptions) {
 		"Set timeout for the command execution",
 	)
 	f.StringVar(
-		&o.VersionsFile, "versions", "image_set.json",
-		"The location of image-set file",
+		&o.VersionsFile, "version-config", "versions.json",
+		"The location of versions config file",
 	)
 	f.StringVarP(
 		&o.ImagesOutput, "image-output", "o", DefaultImagesOutput,

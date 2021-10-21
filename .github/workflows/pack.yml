@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        beta: true
+        default: "beta"
+        description: "set version"
+        required: false
 
 jobs:
   pack:
@@ -19,8 +21,8 @@ jobs:
       QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
       QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
       KUBERNETES_VERSION: 1.22.2
-      ARCH: amd64
-      BRTA: ${{ github.event.inputs.version.beta }}
+      PACK_ARCH: amd64
+      PACK_VERSION: ${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,6 +60,7 @@ jobs:
           -u ${ALI_REGISTRY_USER} \
           -p ${ALI_REGISTRY_PASS} \
           --version-config ${HOME}/pack/versions.json \
+          --image-output ${HOME}/pack/images
       - name: post pack success
         continue-on-error: false
         run: |

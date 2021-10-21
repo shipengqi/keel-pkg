@@ -2,11 +2,11 @@ name: sync k8s.gcr.io
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches: [ main ]
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches: [ main ]
   schedule:
     - cron:  '20 1 * * *'
 

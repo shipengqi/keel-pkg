@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"path/filepath"
+
 	"github.com/shipengqi/keel-pkg/lib/deps"
 	"github.com/shipengqi/keel-pkg/lib/log"
 	"github.com/shipengqi/keel-pkg/lib/utils/cliutil"
-	"path/filepath"
 )
 
 const (
@@ -67,6 +68,15 @@ func pull(output, imgName string) error {
 		return err
 	}
 	log.Debugf("save [%s] done!", tarName)
+
+	log.Debugf("removing [%s] ...", imgFullName)
+	_, stderr, _, err = cliutil.Exec("docker", []string{"rmi", imgFullName})
+	if err != nil {
+		log.Debugf("remove [%s]: %v", imgFullName, stderr)
+		return err
+	}
+	log.Debugf("remove [%s] done!", imgFullName, stderr)
+
 	return nil
 }
 

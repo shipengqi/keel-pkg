@@ -25,7 +25,7 @@ ls -lh ${PACK_HOME}/src/runtime/containerd/bin/
 echo "Coping images"
 mkdir -p ${PACK_HOME}/src/images
 sudo cp ./images/* ${PACK_HOME}/src/images
-rm -rf ./images
+sudo rm -rf ./images
 sudo chmod 755 ${PACK_HOME}/src/images/*
 ls -lh ${PACK_HOME}/src/images
 
@@ -37,9 +37,9 @@ fi
 
 echo "Packing ${TAR_NAME}"
 cd ${PACK_HOME}/src
-tar -czvf ${PACK_HOME}/${TAR_NAME} .
+sudo tar -czvf ${PACK_HOME}/${TAR_NAME} .
 cd ${PACK_HOME}
-rm -rf ./src
+sudo rm -rf ./src
 sudo chmod 755 ${PACK_HOME}/${TAR_NAME}
 echo "Pack ${TAR_NAME} done!"
 

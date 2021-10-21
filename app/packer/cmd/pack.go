@@ -10,15 +10,16 @@ import (
 )
 
 const (
-	DefaultRegistry     = "registry.cn-hangzhou.aliyuncs.com"
-	DefaultRegistryNs   = "keel"
-	DefaultImagesOutput = "/var/run/keel/pack/images"
+	DefaultRegistry       = "registry.cn-hangzhou.aliyuncs.com"
+	DefaultRegistryNs     = "keel"
+	DefaultImagesOutput   = "/var/run/keel/pack/images"
+	DefaultDownloadOutput = "/var/run/keel/pack"
 )
 
 func pack(o *packOptions, set *deps.Versions) error {
 	list := uriTmplList(set)
 	for i := range list {
-		err := download(list[i])
+		err := download(list[i], o.DownloadOutput)
 		if err != nil {
 			return err
 		}
@@ -75,14 +76,14 @@ func pull(output, imgName string) error {
 		log.Debugf("remove [%s]: %v", imgFullName, stderr)
 		return err
 	}
-	log.Debugf("remove [%s] done!", imgFullName, stderr)
+	log.Debugf("remove [%s] done!", imgFullName)
 
 	return nil
 }
 
-func download(uri string) error {
+func download(output, uri string) error {
 	log.Debugf("wget [%s] ...", uri)
-	_, stderr, _, err := cliutil.Exec("wget", []string{uri})
+	_, stderr, _, err := cliutil.Exec("wget", []string{uri, "-P", output})
 	if err != nil {
 		log.Debugf("wget [%s]: %v", uri, stderr)
 		return err

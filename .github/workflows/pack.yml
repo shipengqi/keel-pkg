@@ -60,7 +60,8 @@ jobs:
           -u ${ALI_REGISTRY_USER} \
           -p ${ALI_REGISTRY_PASS} \
           --version-config ${HOME}/pack/versions.json \
-          --image-output ${HOME}/pack/images
+          --image-output ${HOME}/pack/images \
+          --download-output ${HOME}/pack
       - name: post pack success
         continue-on-error: false
         run: |

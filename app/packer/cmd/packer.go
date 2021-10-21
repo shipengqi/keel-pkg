@@ -1,14 +1,15 @@
 package cmd
 
 import (
+	"os"
+	"time"
+
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 	"github.com/shipengqi/keel-pkg/lib/deps"
 	"github.com/shipengqi/keel-pkg/lib/utils/fsutil"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"os"
-	"time"
 
 	"github.com/shipengqi/keel-pkg/lib/utils/fmtutil"
 )
@@ -20,11 +21,12 @@ var (
 )
 
 type packOptions struct {
-	RegistryUser string
-	RegistryPass string
-	VersionsFile string
-	ImagesOutput string
-	CmdTimeout   time.Duration
+	RegistryUser   string
+	RegistryPass   string
+	VersionsFile   string
+	ImagesOutput   string
+	DownloadOutput string
+	CmdTimeout     time.Duration
 }
 
 func New() *cobra.Command {
@@ -79,6 +81,10 @@ func addPackFlags(f *pflag.FlagSet, o *packOptions) {
 	f.StringVarP(
 		&o.ImagesOutput, "image-output", "o", DefaultImagesOutput,
 		"The location of images output",
+	)
+	f.StringVarP(
+		&o.DownloadOutput, "download-output", "d", DefaultDownloadOutput,
+		"The location of download output",
 	)
 }
 

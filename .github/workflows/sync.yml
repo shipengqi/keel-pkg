@@ -59,7 +59,6 @@ jobs:
           --limit ${LIMIT:=3} \
           --image-set ${HOME}/sync/image_set.json
       - name: post sync success
-        continue-on-error: false
         run: |
           /bin/bash .github/scripts/post-sync.sh
           ls -alh ${HOME}/sync

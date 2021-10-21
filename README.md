@@ -89,3 +89,5 @@ make clean        - remove binary file and prune image
 - https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md
 - https://kubernetes.io/releases/download/
 - https://blog.csdn.net/networken/article/details/84571373
+- https://github.com/actions/upload-artifact/issues/8
+- https://github.com/actions/upload-artifact/tree/v2-preview#environment-variables-and-tilde-expansion

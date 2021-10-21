@@ -1,14 +1,12 @@
 name: pack kubernetes.tar.gz
 
 on:
-  workflow_dispatch:
-    inputs:
-      beta: true
-  push:
-    branches:
-      - test
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        beta: true
 
 jobs:
   pack:
@@ -22,7 +20,7 @@ jobs:
       QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
       KUBERNETES_VERSION: 1.22.2
       ARCH: amd64
-      BRTA: ${{ github.event.inputs.beta }}
+      BRTA: ${{ github.event.inputs.version.beta }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

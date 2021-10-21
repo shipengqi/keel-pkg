@@ -24,6 +24,7 @@ ls -lh ${PACK_HOME}/src/runtime/containerd/bin/
 
 echo "Coping images"
 mkdir -p ${PACK_HOME}/src/images
+sudo chmod 755 ./images
 cp ./images/* ${PACK_HOME}/src/images
 rm -rf ./images
 ls -lh ${PACK_HOME}/src/images
@@ -39,8 +40,9 @@ cd ${PACK_HOME}/src
 tar -czvf ${PACK_HOME}/${TAR_NAME} .
 cd ${PACK_HOME}
 rm -rf ./src
+sudo chmod 755 ${PACK_HOME}/${TAR_NAME}
 echo "Pack ${TAR_NAME} done!"
 
 echo "Pushing ${TAR_NAME} ..."
-./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} --pkg-uri ${PACK_HOME}/${TAR_NAME}
+sudo ./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} --pkg-uri ${PACK_HOME}/${TAR_NAME}
 echo "Push ${TAR_NAME} done!"

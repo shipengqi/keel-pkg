@@ -42,7 +42,6 @@ jobs:
         run: |
           make build-sync
           /bin/bash .github/scripts/pre-sync.sh
-          ls -alh ${SYNC_HOME}
           ${SYNC_HOME}/synctl sum ${SYNC_HOME}/sync.bolt.db | wc -l
         env:
           CGO_ENABLED: 0

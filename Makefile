@@ -7,7 +7,7 @@ version ?= $(DEFAULT_VERSION)
 build_time := $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 build_commit := $(shell git rev-parse --short HEAD)
 packer_cmd_path := github.com/shipengqi/keel-pkg/app/packer/cmd
-sync_cmd_path := github.com/shipengqi/keel-pkg/app/packer/cmd
+sync_cmd_path := github.com/shipengqi/keel-pkg/app/synchronizer/cmd
 
 .PHONY: all show setup build build-sync build-pack test benchmark clean help
 all: help

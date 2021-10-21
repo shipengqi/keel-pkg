@@ -10,7 +10,7 @@ sudo chmod 755 kubectl kubelet
 mkdir -p ${PACK_HOME}/src/kubernetes/bin/
 mv kubectl ${PACK_HOME}/src/kubernetes/bin/
 mv kubelet ${PACK_HOME}/src/kubernetes/bin/
-ls -lh ${PACK_HOME}/src/runtime/kubernetes/bin/
+ls -lh ${PACK_HOME}/src/kubernetes/bin/
 
 echo "Coping runtime"
 mkdir -p ${PACK_HOME}/src/runtime/containerd/bin/

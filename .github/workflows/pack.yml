@@ -1,8 +1,8 @@
 name: pack kubernetes.tar.gz
 
 on:
-  release:
-    types: [created]
+#  release:
+#    types: [created]
   workflow_dispatch:
     inputs:
       betaversion:
@@ -17,6 +17,10 @@ on:
         default: "1.22.2"
         description: "set kube version"
         required: false
+      bucket:
+        default: "keel-noram"
+        description: "set bucket"
+        required: false
 jobs:
   pack:
     name: pack
@@ -30,6 +34,7 @@ jobs:
       KUBERNETES_VERSION: ${{ github.event.inputs.kubeversion }}
       PACK_ARCH: ${{ github.event.inputs.arch }}
       BETA_VERSION: ${{ github.event.inputs.betaversion }}
+      QINIU_BUCKET: ${{ github.event.inputs.bucket }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

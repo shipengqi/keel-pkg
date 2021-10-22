@@ -44,5 +44,5 @@ sudo chmod 755 ${PACK_HOME}/${TAR_NAME}
 echo "Pack ${TAR_NAME} done!"
 
 echo "Pushing ${TAR_NAME} ..."
-sudo ./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} --pkg-uri ${PACK_HOME}/${TAR_NAME}
+sudo ./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} -b ${QINIU_BUCKET} --pkg-uri ${PACK_HOME}/${TAR_NAME}
 echo "Push ${TAR_NAME} done!"

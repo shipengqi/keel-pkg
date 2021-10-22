@@ -15,6 +15,7 @@ import (
 type pushOptions struct {
 	accessKey string
 	secretKey string
+	bucket    string
 	pkgUri    string
 }
 
@@ -36,15 +37,16 @@ func newPushCommand() *cobra.Command {
 	c.DisableFlagsInUseLine = true
 	c.Flags().StringVarP(&o.accessKey, "access-key", "k", "", "The AccessKey")
 	c.Flags().StringVarP(&o.secretKey, "secret-key", "s", "","The SecretKey")
+	c.Flags().StringVarP(&o.bucket, "bucket", "b", "keel","The bucket of Storage")
 	c.Flags().StringVar(&o.pkgUri, "pkg-uri", "", "The location of package")
 
 	return c
 }
 
 func push(opts *pushOptions) error {
-	bucket := "keel"
+	bucket := opts.bucket
 	key := filepath.Base(opts.pkgUri)
-	log.Debugf("pushing [%s] ...", opts.pkgUri)
+	log.Debugf("pushing [%s] to [%s] ...", opts.pkgUri, bucket)
 
 	cfg := storage.Config{}
 	cfg.Zone = &storage.ZoneHuadong

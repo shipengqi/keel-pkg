@@ -65,11 +65,6 @@ $ ./synctl sync \
 --limit ${LIMIT:=8}
 ```
 
-pack kubernetes.tar.gz:
-```bash
-
-```
-
 ## How to build
 ```bash
 make              - help

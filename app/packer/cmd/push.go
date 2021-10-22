@@ -53,6 +53,10 @@ func push(opts *pushOptions) error {
 	cfg.UseHTTPS = true
 	cfg.UseCdnDomains = false
 
+	if bucket != DefaultRegistryNs {
+		cfg.Zone = &storage.ZoneBeimei
+	}
+
 	po := storage.PutPolicy{
 		Scope: bucket,
 	}

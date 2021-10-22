@@ -46,7 +46,7 @@ echo "Pack ${TAR_NAME} done!"
 echo "Pushing ${TAR_NAME} to ${PUSH_TO} ..."
 
 
-if [ "${PUSH_TO}" eq "dockerhub" ];then
+if [ "${PUSH_TO}" = "dockerhub" ];then
     docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}
     cat>Dockerfile<<EOF
 FROM busybox:1.34.0

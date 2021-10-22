@@ -18,6 +18,7 @@ jobs:
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      SYNC_DB_REGISTRY: ${{ secrets.SYNC_DB_REGISTRY }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

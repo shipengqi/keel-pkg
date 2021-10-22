@@ -16,7 +16,7 @@ jobs:
     env:
       ALI_REGISTRY_USER: ${{ secrets.ALI_REGISTRY_USER }}
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
-      DOCKERHUB_USER: shipengqi
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
     runs-on: ubuntu-latest
     steps:

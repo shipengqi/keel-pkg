@@ -16,5 +16,5 @@ COPY image_set.json /
 EOF
 ls -lh
 
-docker build -t shipengqi/google_containers_sync_db .
-docker push shipengqi/google_containers_sync_db
+docker build -t ${DOCKERHUB_USER}/${SYNC_DB_REGISTRY} .
+docker push ${DOCKERHUB_USER}/${SYNC_DB_REGISTRY}

@@ -21,20 +21,26 @@ on:
         default: "keel-noram"
         description: "set bucket"
         required: false
+      pushto:
+        default: "dockerhub"
+        description: "set repo"
+        required: false
 jobs:
   pack:
     name: pack
     env:
       ALI_REGISTRY_USER: ${{ secrets.ALI_REGISTRY_USER }}
       ALI_REGISTRY_PASS: ${{ secrets.ALI_REGISTRY_PASS }}
-      DOCKERHUB_USER: shipengqi
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      PACK_REGISTRY: ${{ secrets.PACK_REGISTRY }}
       QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
       QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
       KUBERNETES_VERSION: ${{ github.event.inputs.kubeversion }}
       PACK_ARCH: ${{ github.event.inputs.arch }}
       BETA_VERSION: ${{ github.event.inputs.betaversion }}
       QINIU_BUCKET: ${{ github.event.inputs.bucket }}
+      PUSH_TO: ${{ github.event.inputs.pushto }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

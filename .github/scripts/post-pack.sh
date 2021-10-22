@@ -29,11 +29,11 @@ sudo rm -rf ./images
 sudo chmod 755 ${PACK_HOME}/src/images/*
 ls -lh ${PACK_HOME}/src/images
 
-TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}.tar.gz
-
+PACK_VERSION=${KUBERNETES_VERSION}-${PACK_ARCH}
 if [ -n "${BETA_VERSION}" ];then
-    TAR_NAME=kube-${KUBERNETES_VERSION}-${PACK_ARCH}-${BETA_VERSION}.tar.gz
+    PACK_VERSION=${KUBERNETES_VERSION}-${PACK_ARCH}-${BETA_VERSION}
 fi
+TAR_NAME=kube-${PACK_VERSION}.tar.gz
 
 echo "Packing ${TAR_NAME}"
 cd ${PACK_HOME}/src
@@ -43,6 +43,20 @@ sudo rm -rf ./src
 sudo chmod 755 ${PACK_HOME}/${TAR_NAME}
 echo "Pack ${TAR_NAME} done!"
 
-echo "Pushing ${TAR_NAME} ..."
-sudo ./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} -b ${QINIU_BUCKET} --pkg-uri ${PACK_HOME}/${TAR_NAME}
+echo "Pushing ${TAR_NAME} to ${PUSH_TO} ..."
+
+
+if [ "${PUSH_TO}" eq "dockerhub" ];then
+    docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASS}
+    cat>Dockerfile<<EOF
+FROM busybox:1.34.0
+COPY ${TAR_NAME} /
+EOF
+    cat Dockerfile
+    docker build -t ${DOCKERHUB_USER}/${PACK_REGISTRY}:${PACK_VERSION} .
+    docker push ${DOCKERHUB_USER}/${PACK_REGISTRY}:${PACK_VERSION}
+else
+    sudo ./packer push -k ${QINIU_ACCESS_KEY} -s ${QINIU_SECRET_KEY} -b ${QINIU_BUCKET} --pkg-uri ${PACK_HOME}/${TAR_NAME}
+fi
+
 echo "Push ${TAR_NAME} done!"

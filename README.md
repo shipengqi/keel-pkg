@@ -4,13 +4,6 @@ keel tools for syncing images from **k8s.gcr.io** and packing kubernetes.tar.gz.
 ![Actions sync workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/sync.yml/badge.svg)
 ![Actions pack workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/pack.yml/badge.svg)
 
-## Registry
-- [Google GCR](https://console.cloud.google.com/gcr/images/google-containers)
-- [AliCloud ACR](https://cr.console.aliyun.com/cn-hangzhou/instances/images)
-  - [ACR doc](https://help.aliyun.com/document_detail/257112.html?spm=5176.166170.J_5253785160.5.286851646Ug5KU)
-- [Huawei Swr](https://console-intl.huaweicloud.com/swr/?agencyId=1e02890d062a42f9be14b82feaa5b711&region=cn-east-3&locale=zh-cn#/app/swr/huaweiOfficialList)
-  - [Swr doc](https://support.huaweicloud.com/intl/zh-cn/productdesc-swr/swr_03_0001.html)
-  
 ## Usage
 ```bash
 $ ./packer -h
@@ -76,6 +69,84 @@ make build-pack   - build packer
      version        the version of packer command, default is 'v1.0.0'. e.g. 'make build-pack version=v1.1.2'
 make clean        - remove binary file and prune image
 ```
+
+`versions.json` version of components for packing:
+```json
+{
+  "arch": "amd64",
+  "images": [
+    {"name":  "etcd", "tag": "3.4.7"},
+    {"name":  "flannel", "tag": "0.5.5"},
+    {"name":  "kube-proxy", "tag": "v1.22.2"},
+    {"name":  "kube-apiserver", "tag": "v1.22.2"},
+    {"name":  "kube-controller-manager", "tag": "v1.22.2"},
+    {"name":  "kube-scheduler", "tag": "v1.22.2"},
+    {"name":  "coredns", "tag": "1.7.0"},
+    {"name":  "metrics-server", "tag": "v0.3.6"}
+  ],
+  "components": [
+    {"name":  "containerd", "tag": "1.5.7"},
+    {"name":  "runc", "tag": "1.0.2"},
+    {"name":  "crictl", "tag": "1.22.0"},
+    {"name":  "kubectl", "tag": "1.22.2"},
+    {"name":  "kubelet", "tag": "1.22.2"}
+  ]
+}
+```
+
+`image_set.json` image list for syncing:
+```json
+{
+  "names": [
+    "etcd",
+    "etcd-amd64",
+    "etcd-arm",
+    "etcd-arm64",
+    "etcd-ppc64le",
+    "etcd-s390x",
+    "coredns",
+    "nginx"
+  ],
+  "prefixes": [
+    "kube",
+    "k8s",
+    "flannel",
+    "fluentd",
+    "fluent-bit",
+    "hyperkube",
+    "metrics-server",
+    "pause",
+    "alpine-iptables",
+    "debian-iptables",
+    "federation",
+    "nginx-ingress"
+  ],
+  "exclude": [
+    "-beta",
+    "-alpha"
+  ]
+}
+```
+
+- `names` contains a list of images that need to be synchronized.
+- `prefixes` contains a list of name prefixes of images that need to be synchronized.
+- `exclude` if the image name contains these strings then it will not be synchronized.
+
+### pack workflow
+![pack workflow](./pack_workflow.png)
+
+- `set beat version`, will add a beta suffix to the package name. e.g. kube-1.22.2-amd64-beta.tar.gz.
+- `set arch`, will set the arch of the package name.
+- `set kube version`, set kubernetes version of the package name.
+- `set bucket`, set the storage bucket of qiniu cloud.
+- `set repo`, if the value is not "dockerhub", will push the package to the qiniu cloud.
+
+## Registry
+- [Google GCR](https://console.cloud.google.com/gcr/images/google-containers)
+- [AliCloud ACR](https://cr.console.aliyun.com/cn-hangzhou/instances/images)
+  - [ACR doc](https://help.aliyun.com/document_detail/257112.html?spm=5176.166170.J_5253785160.5.286851646Ug5KU)
+- [Huawei Swr](https://console-intl.huaweicloud.com/swr/?agencyId=1e02890d062a42f9be14b82feaa5b711&region=cn-east-3&locale=zh-cn#/app/swr/huaweiOfficialList)
+  - [Swr doc](https://support.huaweicloud.com/intl/zh-cn/productdesc-swr/swr_03_0001.html)
 
 ## Reference
 - https://github.com/containerd/containerd

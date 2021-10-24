@@ -1,10 +1,12 @@
 package deps
 
 import (
-	jsoniter "github.com/json-iterator/go"
 	"os"
 	"path/filepath"
 	"testing"
+
+	jsoniter "github.com/json-iterator/go"
+	"github.com/shipengqi/keel-pkg/lib/utils/tmplutil"
 )
 
 func TestUnmarshal(t *testing.T) {
@@ -31,10 +33,18 @@ func TestUnmarshal2(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	set := &Version{}
+	set := &Versions{}
 	err = jsoniter.Unmarshal(setBytes, set)
 	if err != nil {
 		t.Fatal(err)
+	}
+	for i := range set.Components {
+		uri, err := tmplutil.ReplaceString(
+			set.Components[i].Uri, set.Components[i].Name, &TmplData{Tag: set.Components[i].Tag, Arch: set.Arch})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(uri)
 	}
 	t.Logf("%+v", set)
 }

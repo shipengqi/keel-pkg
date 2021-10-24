@@ -11,10 +11,22 @@
     {"name":  "metrics-server", "tag": "v0.3.6"}
   ],
   "components": [
-    {"name":  "containerd", "tag": "1.5.7"},
-    {"name":  "runc", "tag": "1.0.2"},
-    {"name":  "crictl", "tag": "1.22.0"},
-    {"name":  "kubectl", "tag": "1.22.2"},
-    {"name":  "kubelet", "tag": "1.22.2"}
+    {
+      "name":  "containerd",
+      "tag": "1.5.7",
+      "uri": "https://github.com/containerd/containerd/releases/download/v{{.Tag}}/containerd-{{.Tag}}-linux-{{.Arch}}.tar.gz"
+    },
+    {
+      "name":  "runc",
+      "tag": "1.0.2",
+      "uri": "https://github.com/opencontainers/runc/releases/download/v{{.Tag}}/runc.{{.Arch}}"
+    },
+    {
+      "name":  "crictl",
+      "tag": "1.22.0",
+      "uri": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{.Tag}}/crictl-v{{.Tag}}-linux-{{.Arch}}.tar.gz"
+    },
+    {"name":  "kubectl", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubectl"},
+    {"name":  "kubelet", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubelet"}
   ]
 }

@@ -17,14 +17,17 @@ const (
 )
 
 func pack(o *packOptions, set *deps.Versions) error {
-	list := uriTmplList(set)
+	list, err := uriTmplList(set)
+	if err != nil {
+		return err
+	}
 	for i := range list {
 		err := download(o.DownloadOutput, list[i])
 		if err != nil {
 			return err
 		}
 	}
-	err := login(o.RegistryUser, o.RegistryPass)
+	err = login(o.RegistryUser, o.RegistryPass)
 	if err != nil {
 		return err
 	}

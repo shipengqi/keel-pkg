@@ -7,21 +7,21 @@ spec:
   containers:
   - command:
     - kube-apiserver
-#{AUDIT_LOG}    - --audit-policy-file=/etc/kubernetes/cfg/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK} This is a mark to turn off audit log
+#{AUDIT_LOG}    - --audit-policy-file=/etc/kubernetes/conf/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK} This is a mark to turn off audit log
 #{AUDIT_LOG}    - --audit-log-path=/etc/kubernetes/log/audit/audit.log                   #{AUDIT_CONFIG_MARK} commenting those marked lines if needed
     - --audit-log-maxage=7
     - --audit-log-maxbackup=10
     - --audit-log-maxsize=100
-#    - --advertise-address={THIS_NODE}
+#    - --advertise-address={{.Hostname}}
     - --bind-address=0.0.0.0
-    - --etcd-servers=https://{THIS_NODE}:4001
+    - --etcd-servers=https://{{.Hostname}}:4001
     - --anonymous-auth=false
     - --profiling=false
     - --insecure-port=0
-    - --secure-port={MASTER_API_SSL_PORT}
+    - --secure-port={{.K8SAPIServerPort}}
     - --authorization-mode=Node,RBAC
 #    - --token-auth-file=/etc/kubernetes/ssl/token
-    - --service-cluster-ip-range={SERVICE_CIDR}
+    - --service-cluster-ip-range={{.ServiceCIDR}}
     - --enable-admission-plugins=NodeRestriction
 #    - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds,DenyEscalatingExec,PodPreset
     - --requestheader-client-ca-file=/etc/kubernetes/ssl/ca.crt
@@ -31,8 +31,8 @@ spec:
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
     - --requestheader-group-headers=X-Remote-Group
     - --requestheader-username-headers=X-Remote-User
-    - --api-audiences=https://kubernetes.default.svc.{DNS_DOMAIN}
-    - --service-account-issuer=https://kubernetes.default.svc.{DNS_DOMAIN}
+    - --api-audiences=https://kubernetes.default.svc.{{.DNSDomain}}
+    - --service-account-issuer=https://kubernetes.default.svc.{{.DNSDomain}}
     - --service-account-signing-key-file=/etc/kubernetes/ssl/kube-serviceaccount.key
     - --service-account-key-file=/etc/kubernetes/ssl/kube-serviceaccount.pub
     - --tls-cert-file=/etc/kubernetes/ssl/kube-api-server.crt
@@ -45,7 +45,7 @@ spec:
     - --kubelet-client-certificate=/etc/kubernetes/ssl/kube-api-kubelet-client.crt
     - --kubelet-client-key=/etc/kubernetes/ssl/kube-api-kubelet-client.key
     - --storage-backend=etcd3
-    - --encryption-provider-config=/etc/kubernetes/cfg/apiserver-encryption.yaml
+    - --encryption-provider-config=/etc/kubernetes/conf/apiserver-encryption.yaml
     - --v=1
     - --service-node-port-range=21-65535
     - --allow-privileged=true
@@ -53,23 +53,23 @@ spec:
     - --runtime-config=autoscaling/v2beta1=true,extensions/v1beta1=true,apps/v1beta1=true,apps/v1beta2=true,extensions/v1beta1/daemonsets=true,extensions/v1beta1/deployments=true,extensions/v1beta1/replicasets=true,extensions/v1beta1/networkpolicies=true,extensions/v1beta1/podsecuritypolicies=true
     - --tls-cipher-suites=TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA
     - --feature-gates=TTLAfterFinished=true
-    image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KUBE_APISERVER}
+    image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
     imagePullPolicy: IfNotPresent
     imagePullSecrets:
       - name: registrypullsecret
-    securityContext:
-      runAsUser: {K8S_USER_ID}
-      runAsGroup: {K8S_GROUP_ID}
-      fsGroup: {K8S_GROUP_ID}
+#    securityContext:
+#      runAsUser: {K8S_USER_ID}
+#      runAsGroup: {K8S_GROUP_ID}
+#      fsGroup: {K8S_GROUP_ID}
     livenessProbe:
       tcpSocket:
-        port: {MASTER_API_SSL_PORT}
+        port: {{.K8SAPIServerPort}}
       initialDelaySeconds: 15
       timeoutSeconds: 15
     name: apiserver
     ports:
-    - containerPort: {MASTER_API_SSL_PORT}
-      hostPort: {MASTER_API_SSL_PORT}
+    - containerPort: {{.K8SAPIServerPort}}
+      hostPort: {{.K8SAPIServerPort}}
       name: https
       protocol: TCP
     resources:
@@ -80,11 +80,11 @@ spec:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-path
       readOnly: true
-    - mountPath: /etc/kubernetes/cfg/apiserver-encryption.yaml
+    - mountPath: /etc/kubernetes/conf/apiserver-encryption.yaml
       name: encryption-cfg
       readOnly: true
 #{AUDIT_LOG}    - name: audit-cfg                                               #{AUDIT_CONFIG_MARK}
-#{AUDIT_LOG}      mountPath: /etc/kubernetes/cfg/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
+#{AUDIT_LOG}      mountPath: /etc/kubernetes/conf/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}      readOnly: true                                                #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}    - name: audit-log-dir                                           #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}      mountPath: /etc/kubernetes/log/audit                          #{AUDIT_CONFIG_MARK}
@@ -100,10 +100,10 @@ spec:
       path: {{.KeelHome}}/ssl
     name: ssl-certs-path
   - hostPath:
-      path: {{.KeelHome}}/cfg/apiserver-encryption.yaml
+      path: {{.KeelHome}}/conf/apiserver-encryption.yaml
     name: encryption-cfg
 #{AUDIT_LOG}  - hostPath:                                             #{AUDIT_CONFIG_MARK}
-#{AUDIT_LOG}      path: {{.KeelHome}}/cfg/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
+#{AUDIT_LOG}      path: {{.KeelHome}}/conf/apiserver-audit-policy.yaml    #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}      type: File                                          #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}    name: audit-cfg                                       #{AUDIT_CONFIG_MARK}
 #{AUDIT_LOG}  - hostPath:                                             #{AUDIT_CONFIG_MARK}

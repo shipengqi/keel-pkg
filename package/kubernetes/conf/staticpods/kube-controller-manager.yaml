@@ -10,7 +10,7 @@ spec:
     #- --address=127.0.0.1
     - --bind-address=127.0.0.1
     - --authorization-always-allow-paths=[/healthz]
-    - --master=https://{THIS_NODE}:{MASTER_API_SSL_PORT}
+    - --master=https://{{.Hostname}}:{{.K8SAPIServerPort}}
     - --leader-elect=true
     - --profiling=false
     - --pod-eviction-timeout=1m0s
@@ -22,20 +22,20 @@ spec:
     - --authentication-kubeconfig=/etc/kubernetes/ssl/kube-controller-kubeconfig
     - --authorization-kubeconfig=/etc/kubernetes/ssl/kube-controller-kubeconfig
     - --use-service-account-credentials
-    - --pv-recycler-pod-template-filepath-nfs=/etc/kubernetes/cfg/recycler.yaml
+#    - --pv-recycler-pod-template-filepath-nfs=/etc/kubernetes/conf/recycler.yaml
     - --flex-volume-plugin-dir=/tmp/kubernetes/kubelet-plugins/volume/exec/
     - --feature-gates=TTLAfterFinished=true
     - --allocate-node-cidrs=true
-    - --cluster-cidr={POD_CIDR}
-    - --node-cidr-mask-size={POD_CIDR_SUBNETLEN}
-    image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KUBE_CONTROLLER_MANAGER}
+    - --cluster-cidr={{.PodCIDR}}
+    - --node-cidr-mask-size={{.PodCIDRMaskSize}}
+    image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
     imagePullPolicy: IfNotPresent
     imagePullSecrets:
       - name: registrypullsecret
-    securityContext:
-      runAsUser: {K8S_USER_ID}
-      runAsGroup: {K8S_GROUP_ID}
-      fsGroup: {K8S_GROUP_ID}
+#    securityContext:
+#      runAsUser: {K8S_USER_ID}
+#      runAsGroup: {K8S_GROUP_ID}
+#      fsGroup: {K8S_GROUP_ID}
     livenessProbe:
       httpGet:
         host: 127.0.0.1
@@ -49,7 +49,7 @@ spec:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-path
       readOnly: true
-    - mountPath: /etc/kubernetes/cfg
+    - mountPath: /etc/kubernetes/conf
       name: config
       readOnly: true
     resources:
@@ -66,5 +66,5 @@ spec:
       path: {{.KeelHome}}/ssl
     name: ssl-certs-path
   - hostPath:
-      path: {{.KeelHome}}/cfg/controller-manager
+      path: {{.KeelHome}}/conf/controller-manager
     name: config

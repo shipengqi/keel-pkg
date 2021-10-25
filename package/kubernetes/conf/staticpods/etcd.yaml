@@ -14,8 +14,8 @@ spec:
       --enable-v2=true
       --listen-peer-urls=https://0.0.0.0:2380
       --listen-client-urls=https://0.0.0.0:4001
-      --advertise-client-urls=https://{THIS_NODE}:4001
-      --initial-advertise-peer-urls=https://{THIS_NODE}:2380
+      --advertise-client-urls=https://{{.Hostname}}:4001
+      --initial-advertise-peer-urls=https://{{.Hostname}}:2380
       --cert-file=/etc/etcd/ssl/etcd-server.crt
       --key-file=/etc/etcd/ssl/etcd-server.key
       --trusted-ca-file=/etc/etcd/ssl/ca.crt
@@ -24,9 +24,9 @@ spec:
       --peer-key-file=/etc/etcd/ssl/etcd-server.key
       --peer-trusted-ca-file=/etc/etcd/ssl/ca.crt
       --peer-client-cert-auth
-      --name={THIS_NODE}
-      --initial-cluster={initial_cluster}
-      --initial-cluster-state={initial_cluster_state}
+      --name={{.Hostname}}
+      --initial-cluster={{.InitialCluster}}
+      --initial-cluster-state={{.initialClusterState}}
       --initial-cluster-token=etcd-cluster-1
       --data-dir=/var/etcd/data
       --auto-compaction-retention=168
@@ -37,7 +37,7 @@ spec:
       --max-wals=5
       --force-new-cluster=false
       --cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA
-    image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_ETCD}
+    image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
     imagePullPolicy: IfNotPresent
     imagePullSecrets:
       - name: registrypullsecret
@@ -46,15 +46,15 @@ spec:
         command:
         - /bin/sh
         - -ec
-        - ETCDCTL_API=3 etcdctl --endpoints=https://{THIS_NODE}:4001 --cacert=/etc/etcd/ssl/ca.crt --cert=/etc/etcd/ssl/etcd-server.crt --key=/etc/etcd/ssl/etcd-server.key get foo
+        - ETCDCTL_API=3 etcdctl --endpoints=https://{{.Hostname}}:4001 --cacert=/etc/etcd/ssl/ca.crt --cert=/etc/etcd/ssl/etcd-server.crt --key=/etc/etcd/ssl/etcd-server.key get foo
       failureThreshold: 8
       initialDelaySeconds: 15
       timeoutSeconds: 15
     name: etcd
-    securityContext:
-      runAsUser: {ETCD_USER_ID}
-      runAsGroup: {ETCD_GROUP_ID}
-      fsGroup: {ETCD_GROUP_ID}
+#    securityContext:
+#      runAsUser: {ETCD_USER_ID}
+#      runAsGroup: {ETCD_GROUP_ID}
+#      fsGroup: {ETCD_GROUP_ID}
     resources:
       requests:
         cpu: 100m

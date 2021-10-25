@@ -1,7 +1,7 @@
 {
   "arch": "amd64",
   "images": [
-    {"name":  "etcd", "tag": "3.4.7"},
+    {"name":  "etcd", "tag": "3.4.9"},
     {"name":  "flannel", "tag": "0.5.5"},
     {"name":  "kube-proxy", "tag": "v1.22.2"},
     {"name":  "kube-apiserver", "tag": "v1.22.2"},

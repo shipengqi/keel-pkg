@@ -10,7 +10,7 @@ spec:
     #- --address=127.0.0.1
     - --bind-address=127.0.0.1
     - --authorization-always-allow-paths=[/healthz]
-    - --master=https://{THIS_NODE}:{MASTER_API_SSL_PORT}
+    - --master=https://{{.Hostname}}:{{.K8SAPIServerPort}}
     - --leader-elect=true
     - --profiling=false
     - --v=1
@@ -19,14 +19,14 @@ spec:
     - --authentication-kubeconfig=/etc/kubernetes/ssl/kube-scheduler-kubeconfig
     - --authorization-kubeconfig=/etc/kubernetes/ssl/kube-scheduler-kubeconfig
     - --feature-gates=TTLAfterFinished=true
-    image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KUBE_SCHEDULER}
+    image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
     imagePullPolicy: IfNotPresent
     imagePullSecrets:
       - name: registrypullsecret
-    securityContext:
-      runAsUser: {K8S_USER_ID}
-      runAsGroup: {K8S_GROUP_ID}
-      fsGroup: {K8S_GROUP_ID}
+#    securityContext:
+#      runAsUser: {K8S_USER_ID}
+#      runAsGroup: {K8S_GROUP_ID}
+#      fsGroup: {K8S_GROUP_ID}
     livenessProbe:
       httpGet:
         host: 127.0.0.1

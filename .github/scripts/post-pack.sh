@@ -51,6 +51,7 @@ if [ "${PUSH_TO}" = "dockerhub" ];then
     cat>Dockerfile<<EOF
 FROM busybox:1.34.0
 COPY ${TAR_NAME} /
+COPY versions.json /
 EOF
     cat Dockerfile
     docker build -t ${DOCKERHUB_USER}/${PACK_REGISTRY}:${PACK_VERSION} .

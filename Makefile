@@ -9,7 +9,7 @@ build_commit := $(shell git rev-parse --short HEAD)
 packer_cmd_path := github.com/shipengqi/keel-pkg/app/packer/cmd
 sync_cmd_path := github.com/shipengqi/keel-pkg/app/synchronizer/cmd
 
-.PHONY: all show setup build build-sync build-pack test benchmark clean help
+.PHONY: all show build build-sync build-pack test benchmark clean help
 all: help
 
 
@@ -20,13 +20,13 @@ build: build-sync build-pack
 # -tags="containers_image_openpgp" https://github.com/containers/image/issues/268
 build-sync:
 	@echo "building command: $(SYNC_CMD) ..."
-	@CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o synctl -ldflags \
+	@CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o $(SYNC_CMD) -ldflags \
 	"-X '$(sync_cmd_path).Version=$(version)' -X '$(sync_cmd_path).BuildTime=$(build_time)' -X '$(sync_cmd_path).GitCommit=$(build_commit)'" \
 	./app/synchronizer/
 
 build-pack:
 	@echo "building command: $(PACK_CMD) ..."
-	@CGO_ENABLED=0 go build -trimpath -mod=mod -o packer -ldflags \
+	@CGO_ENABLED=0 go build -trimpath -mod=mod -o $(PACK_CMD) -ldflags \
 	"-X '$(packer_cmd_path).Version=$(version)' -X '$(packer_cmd_path).BuildTime=$(build_time)' -X '$(packer_cmd_path).GitCommit=$(build_commit)'" \
 	./app/packer/
 
@@ -44,10 +44,10 @@ clean:
 .ONESHELL:
 show:
 	@echo "current directory: $(BASEDIR)"
-	@echo CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o synctl -ldflags \
+	@echo CGO_ENABLED=0 go build -tags="containers_image_openpgp" -mod=mod -o $(SYNC_CMD) -ldflags \
           	"-X '$(sync_cmd_path).Version=$(version)' -X '$(sync_cmd_path).BuildTime=$(build_time)' -X '$(sync_cmd_path).GitCommit=$(build_commit)'" \
           	./app/synchronizer/
-	@echo CGO_ENABLED=0 go build -mod=mod -o packer -ldflags \
+	@echo CGO_ENABLED=0 go build -mod=mod -o $(PACK_CMD) -ldflags \
           	"-X '$(packer_cmd_path).Version=$(version)' -X '$(packer_cmd_path).BuildTime=$(build_time)' -X '$(packer_cmd_path).GitCommit=$(build_commit)'" \
           	./app/packer/
 

@@ -40,7 +40,7 @@ cd ${PACK_HOME}/src
 sudo tar -czvf ${PACK_HOME}/${TAR_NAME} .
 cd ${PACK_HOME}
 sudo rm -rf ./src
-sudo chmod 755 ${PACK_HOME}/${TAR_NAME}
+sudo chmod 644 ${PACK_HOME}/${TAR_NAME}
 echo "Pack ${TAR_NAME} done!"
 
 echo "Pushing ${TAR_NAME} to ${PUSH_TO} ..."
@@ -51,7 +51,6 @@ if [ "${PUSH_TO}" = "dockerhub" ];then
     cat>Dockerfile<<EOF
 FROM busybox:1.34.0
 COPY ${TAR_NAME} /
-COPY versions.json /
 EOF
     cat Dockerfile
     docker build -t ${DOCKERHUB_USER}/${PACK_REGISTRY}:${PACK_VERSION} .

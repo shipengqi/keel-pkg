@@ -65,8 +65,8 @@ oom_score = -999
             SystemdCgroup = true
             Root = "{{.KeelRuntimeDataHome}}/containerd/runc"
     [plugins."io.containerd.grpc.v1.cri".cni]
-      bin_dir = "{{.KeelHome}}/cni"
-      conf_dir = "{{.KeelHome}}/cni/conf"
+      bin_dir = "{{.KeelHome}}/cni/{{.CNIPlugin}}"
+      conf_dir = "{{.KeelHome}}/cni/{{.CNIPlugin}}/conf"
       max_conf_num = 1
     [plugins."io.containerd.grpc.v1.cri".registry]
       [plugins."io.containerd.grpc.v1.cri".registry.configs]

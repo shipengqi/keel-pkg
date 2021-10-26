@@ -107,7 +107,7 @@ spec:
             path: /run
         - name: cni-kubelet
           hostPath:
-            path: {{.KeelHome}}/cni/conf
+            path: {{.KeelHome}}/cni/flannel/conf
         - name: cni-conf
           configMap:
             name: kube-flannel-cfg

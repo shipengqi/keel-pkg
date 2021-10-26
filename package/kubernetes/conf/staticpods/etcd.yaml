@@ -26,7 +26,7 @@ spec:
       --peer-client-cert-auth
       --name={{.Hostname}}
       --initial-cluster={{.InitialCluster}}
-      --initial-cluster-state={{.initialClusterState}}
+      --initial-cluster-state={{.InitialClusterState}}
       --initial-cluster-token=etcd-cluster-1
       --data-dir=/var/etcd/data
       --auto-compaction-retention=168

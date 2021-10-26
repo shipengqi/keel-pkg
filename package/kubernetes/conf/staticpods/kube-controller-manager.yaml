@@ -7,7 +7,6 @@ spec:
   containers:
   - command:
     - kube-controller-manager
-    #- --address=127.0.0.1
     - --bind-address=127.0.0.1
     - --authorization-always-allow-paths=[/healthz]
     - --master=https://{{.Hostname}}:{{.K8SAPIServerPort}}

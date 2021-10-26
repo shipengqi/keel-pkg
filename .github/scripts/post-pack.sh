@@ -12,6 +12,12 @@ mv kubectl ${PACK_HOME}/src/kubernetes/bin/
 mv kubelet ${PACK_HOME}/src/kubernetes/bin/
 ls -lh ${PACK_HOME}/src/kubernetes/bin/
 
+echo "Coping cni-plugins"
+sudo chmod 755 flannel-amd64
+mv flannel-amd64 -C ${PACK_HOME}/src/kubernetes/cni/flannel/flannel
+tar -xf cni-plugins-*${PACK_ARCH}-*.tgz -C ${PACK_HOME}/src/kubernetes/cni/flannel/
+ls -lh ${PACK_HOME}/src/kubernetes/cni/flannel
+
 echo "Coping runtime"
 mkdir -p ${PACK_HOME}/src/runtime/containerd/bin/
 tar -xf containerd-*${PACK_ARCH}.tar.gz -C ${PACK_HOME}/src/runtime/containerd/
@@ -26,7 +32,7 @@ echo "Coping images"
 mkdir -p ${PACK_HOME}/src/images
 sudo cp ./images/* ${PACK_HOME}/src/images
 sudo rm -rf ./images
-sudo chmod 755 ${PACK_HOME}/src/images/*
+sudo chmod 644 ${PACK_HOME}/src/images/*
 ls -lh ${PACK_HOME}/src/images
 
 PACK_VERSION=${KUBERNETES_VERSION}-${PACK_ARCH}
@@ -52,6 +58,7 @@ if [ "${PUSH_TO}" = "dockerhub" ];then
     cat>Dockerfile<<EOF
 FROM busybox:1.34.0
 COPY ${TAR_NAME} /
+RUN chmod 644 ${TAR_NAME}
 EOF
     cat Dockerfile
     docker build -t ${DOCKERHUB_USER}/${PACK_REGISTRY}:${PACK_VERSION} .

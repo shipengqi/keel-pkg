@@ -36,6 +36,7 @@ fi
 TAR_NAME=kube-${PACK_VERSION}.tar.gz
 
 echo "Packing ${TAR_NAME}"
+cp ${PACK_HOME}/versions.json ${PACK_HOME}/src
 cd ${PACK_HOME}/src
 sudo tar -czvf ${PACK_HOME}/${TAR_NAME} .
 cd ${PACK_HOME}

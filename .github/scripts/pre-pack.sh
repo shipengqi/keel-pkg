@@ -5,7 +5,7 @@ PACK_HOME=${HOME}/pack
 mkdir -p ${PACK_HOME}
 mkdir -p ${PACK_HOME}/src
 sudo chmod 644 versions.json
-cp versions.json ${PACK_HOME}/src
+cp versions.json ${PACK_HOME}
 cp -rf package/* ${PACK_HOME}/src
 mv packer ${PACK_HOME}
 

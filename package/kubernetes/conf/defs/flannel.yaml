@@ -32,7 +32,7 @@ spec:
         - name: registrypullsecret
       initContainers:
       - name: install-cni
-        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_FLANNEL}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.InitImageName}}
         command:
         - cp
         args:
@@ -53,7 +53,7 @@ spec:
           mountPath: /etc/kube-flannel/
       containers:
       - name: kube-flannel
-        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_FLANNEL}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
         resources:
           requests:
             cpu: "100m"
@@ -69,7 +69,7 @@ spec:
             - NET_RAW
         env:
         - name: KUBERNETES_SERVICE_PORT
-          value: "{MASTER_API_SSL_PORT}"
+          value: "{{.K8SAPIServerPort}}"
         - name: CURRENT_NODE_NAME
           valueFrom:
             fieldRef:

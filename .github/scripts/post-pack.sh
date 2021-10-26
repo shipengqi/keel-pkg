@@ -13,9 +13,10 @@ mv kubelet ${PACK_HOME}/src/kubernetes/bin/
 ls -lh ${PACK_HOME}/src/kubernetes/bin/
 
 echo "Coping cni-plugins"
-sudo chmod 755 flannel-amd64
 mv flannel-amd64 -C ${PACK_HOME}/src/kubernetes/cni/flannel/flannel
 tar -xf cni-plugins-*${PACK_ARCH}-*.tgz -C ${PACK_HOME}/src/kubernetes/cni/flannel/
+rm -rf cni-plugins-*${PACK_ARCH}-*.tgz
+sudo chmod 755 ${PACK_HOME}/src/kubernetes/cni/flannel/*
 ls -lh ${PACK_HOME}/src/kubernetes/cni/flannel
 
 echo "Coping runtime"

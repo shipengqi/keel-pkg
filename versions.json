@@ -29,7 +29,7 @@
     },
     {"name":  "kubectl", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubectl"},
     {"name":  "kubelet", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubelet"},
-    {"name":  "flannel", "tag": "1.1", "uri": "https://github.com/flannel-io/cni-plugin/releases/download/v{{.Tag}}/flannel-{{.Arch}}"},
+    {"name":  "flannel", "tag": "1.0", "uri": "https://github.com/flannel-io/cni-plugin/releases/download/v{{.Tag}}/flannel-{{.Arch}}"},
     {"name":  "cni-plugins", "tag": "1.0.1", "uri": "https://github.com/containernetworking/plugins/releases/download/v{{.Tag}}/cni-plugins-linux-{{.Arch}}-v{{.Tag}}.tgz"}
   ]
 }

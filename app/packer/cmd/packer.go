@@ -62,6 +62,7 @@ func New() *cobra.Command {
 	flags := c.Flags()
 	flags.SortFlags = false
 	c.DisableFlagsInUseLine = true
+	c.CompletionOptions.DisableDefaultCmd = true
 
 	addRegistryClientFlags(flags, o)
 	addPackFlags(flags, o)

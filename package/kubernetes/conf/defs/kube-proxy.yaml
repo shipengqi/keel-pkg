@@ -36,7 +36,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: kube-proxy
-        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KUBE_PROXY}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
         command:
         - /bin/sh
         - -c
@@ -61,7 +61,7 @@ spec:
           readOnly: true
         env:
           - name: KUBERNETES_SERVICE_PORT
-            value: "{MASTER_API_SSL_PORT}"
+            value: "{{.K8SAPIServerPort}}"
           - name: CURRENT_NODE_NAME
             valueFrom:
               fieldRef:

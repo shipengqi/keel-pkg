@@ -30,10 +30,10 @@ data:
     }
   net-conf.json: |-
     {
-      "Network": "{POD_CIDR}",
+      "Network": "{{.PodCIDR}}",
       "Backend": {
-        "Type": "{FLANNEL_BACKEND_TYPE}",
-        "SubnetLen": {POD_CIDR_SUBNETLEN}
+        "Type": "{{.FlannelBackendType}}",
+        "SubnetLen": {{.NodeCIDRMaskSize}}
       }
     }
 ---

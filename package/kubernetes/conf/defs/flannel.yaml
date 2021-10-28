@@ -68,8 +68,6 @@ spec:
             - NET_ADMIN
             - NET_RAW
         env:
-        - name: KUBERNETES_SERVICE_PORT
-          value: "{{.K8SAPIServerPort}}"
         - name: CURRENT_NODE_NAME
           valueFrom:
             fieldRef:
@@ -82,12 +80,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: FLANNELD_KUBE_SUBNET_MGR
-          value: "true"
-        - name: FLANNELD_NET_CONFIG_PATH
-          value: /etc/kube-flannel/net-conf.json
-        - name: FLANNELD_SUBNET_FILE
-          value: /run/flannel/subnet.env
         volumeMounts:
         - name: iface-cfg
           mountPath: /iface/

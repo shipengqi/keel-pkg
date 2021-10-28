@@ -26,7 +26,7 @@ spec:
     - --feature-gates=TTLAfterFinished=true
     - --allocate-node-cidrs=true
     - --cluster-cidr={{.PodCIDR}}
-    - --node-cidr-mask-size={{.PodCIDRMaskSize}}
+    - --node-cidr-mask-size={{.NodeCIDRMaskSize}}
     image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
     imagePullPolicy: IfNotPresent
     imagePullSecrets:

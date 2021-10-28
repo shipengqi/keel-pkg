@@ -131,6 +131,7 @@ make clean        - remove binary file and prune image
 - `names` contains a list of images that need to be synchronized.
 - `prefixes` contains a list of name prefixes of images that need to be synchronized.
 - `exclude` if the image name contains these strings then it will not be synchronized.
+- `patches`
 
 ### pack workflow
 ![pack workflow](./pack_workflow.png)
@@ -147,6 +148,7 @@ make clean        - remove binary file and prune image
   - [ACR doc](https://help.aliyun.com/document_detail/257112.html?spm=5176.166170.J_5253785160.5.286851646Ug5KU)
 - [Huawei Swr](https://console-intl.huaweicloud.com/swr/?agencyId=1e02890d062a42f9be14b82feaa5b711&region=cn-east-3&locale=zh-cn#/app/swr/huaweiOfficialList)
   - [Swr doc](https://support.huaweicloud.com/intl/zh-cn/productdesc-swr/swr_03_0001.html)
+- [quay.io](https://quay.io/organization/coreos)
 
 ## Reference
 - https://github.com/containerd/containerd
@@ -157,3 +159,5 @@ make clean        - remove binary file and prune image
 - https://blog.csdn.net/networken/article/details/84571373
 - https://github.com/actions/upload-artifact/issues/8
 - https://github.com/actions/upload-artifact/tree/v2-preview#environment-variables-and-tilde-expansion
+- https://hub.docker.com/r/flannelcni/flannel-cni-plugin
+- https://hub.docker.com/r/rancher/mirrored-flannelcni-flannel-cni-plugin

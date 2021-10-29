@@ -101,12 +101,24 @@ func (s *synca) Run() (err error) {
 	if err != nil {
 		return err
 	}
+
 	log.Infof("found images count: %d in %s", len(pubs), gcrc.DefaultGcrRepo)
 	images, err := s.fetchImageTagList(pubs)
 	if err != nil {
 		return err
 	}
+
+	log.Debugf("add [%d] patch images", len(s.opts.ImageSet.Patches))
+	patches, err := s.fetchPatchTagList()
+	if err != nil {
+		return err
+	}
+	if len(patches) > 0 {
+		log.Debugf("found [%d] patch image tags", len(patches))
+		images = append(images, patches...)
+	}
 	sort.Sort(images)
+
 	log.Infof("sync images count: %d", len(images))
 	err = s.syncImages(images)
 	if err != nil {
@@ -114,6 +126,43 @@ func (s *synca) Run() (err error) {
 	}
 	log.Info("sync images done!!!")
 	return
+}
+
+func (s *synca) fetchPatchTagList() (Images, error) {
+	patches := s.opts.ImageSet.Patches
+	var images Images
+	for i := 0; i < len(patches); i++ {
+		patch := patches[i]
+		log.Debugf("fetch tags of [%s] ...", patch)
+		words := strings.Split(patch, "/")
+		if len(words) < 2 || len(words) > 3 {
+			log.Warnf("invalid image format [%s]", patch)
+			continue
+		}
+		baseName := strings.Join(words[1:], "/")
+		log.Debugf("parse repo [%s], basename [%s]", words[0], baseName)
+		tags, err := s.gcr.AllTagsWithRepo(words[0], baseName)
+		if err != nil {
+			log.Warnf("fetch tags of [%s] failed!", patch)
+			continue
+		}
+		var ns string
+		name := baseName
+		repo := words[0]
+		if len(words) == 3 {
+			ns = words[1]
+			name = words[2]
+		}
+		for _, tag := range tags {
+			images = append(images, &Image{
+				Repo: repo,
+				Ns:   ns,
+				Name: name,
+				Tag:  tag,
+			})
+		}
+	}
+	return images, nil
 }
 
 func (s *synca) fetchImageTagList(pubs []string) (Images, error) {

@@ -5,12 +5,23 @@ import "fmt"
 type Images []*Image
 
 type Image struct {
-	Name     string // basename
-	Tag      string
+	Repo string // for patch images
+	Ns   string // for patch images
+	Name string // basename
+	Tag  string
 }
 
 func (i *Image) String() string {
-	return fmt.Sprintf("k8s.gcr.io/%s:%s", i.Name, i.Tag)
+	var uri string
+	if len(i.Repo) == 0 {
+		i.Repo = "k8s.gcr.io"
+	}
+	uri = i.Repo
+	if len(i.Ns) > 0 {
+		uri = uri + "/" + i.Ns
+	}
+
+	return fmt.Sprintf("%s/%s:%s", uri, i.Name, i.Tag)
 }
 
 func (i *Image) Key() string {

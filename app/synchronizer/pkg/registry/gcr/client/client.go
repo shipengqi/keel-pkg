@@ -125,16 +125,12 @@ func (c *Client) AllImages() ([]string, error) {
 	return filters, nil
 }
 
+func (c *Client) AllTagsWithRepo(repo, baseName string) ([]string, error) {
+	return c.allTagsWithRepo(repo, baseName)
+}
+
 func (c *Client) AllTags(baseName string) ([]string, error) {
-	imageName := fmt.Sprintf("%s/%s", c.opts.Repo, baseName)
-	ref, err := docker.ParseReference("//" + imageName)
-	if err != nil {
-		return nil, err
-	}
-	authCtx := &types.SystemContext{DockerAuthConfig: &types.DockerAuthConfig{}}
-	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.ReqTimeout)
-	defer cancel()
-	return docker.GetRepositoryTags(ctx, authCtx, ref)
+	return c.allTagsWithRepo(c.opts.Repo, baseName)
 }
 
 func (c *Client) Sync(src, dst string) error {
@@ -232,4 +228,16 @@ func (c *Client) allImages(imagesUri string) ([]string, error) {
 		return nil, err
 	}
 	return baseNames, nil
+}
+
+func (c *Client) allTagsWithRepo(repo, baseName string) ([]string, error) {
+	imageName := fmt.Sprintf("%s/%s", repo, baseName)
+	ref, err := docker.ParseReference("//" + imageName)
+	if err != nil {
+		return nil, err
+	}
+	authCtx := &types.SystemContext{DockerAuthConfig: &types.DockerAuthConfig{}}
+	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.ReqTimeout)
+	defer cancel()
+	return docker.GetRepositoryTags(ctx, authCtx, ref)
 }

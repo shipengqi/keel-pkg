@@ -49,6 +49,7 @@ func NewSyncCommand(done chan error) *cobra.Command {
 	flags := c.Flags()
 	flags.SortFlags = false
 	c.DisableFlagsInUseLine = true
+	c.SilenceUsage = true
 
 	addRegistryClientFlags(flags, o)
 	addSyncFlags(flags, o)

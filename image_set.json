@@ -25,6 +25,10 @@
   ],
   "exclude": [
     "-beta",
-    "-alpha"
+    "-alpha",
+    "-rc."
+  ],
+  "patches": [
+    "registry-1.docker.io/flannelcni/flannel-cni-plugin"
   ]
 }

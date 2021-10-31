@@ -160,4 +160,4 @@ make clean        - remove binary file and prune image
 - https://github.com/actions/upload-artifact/issues/8
 - https://github.com/actions/upload-artifact/tree/v2-preview#environment-variables-and-tilde-expansion
 - https://hub.docker.com/r/flannelcni/flannel-cni-plugin
-- https://hub.docker.com/r/rancher/mirrored-flannelcni-flannel-cni-plugin
+- https://github.com/flannel-io/flannel/issues/784

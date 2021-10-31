@@ -1,6 +1,4 @@
 ---
-#create keel view service account
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -30,7 +28,6 @@ rules:
     - list
     - watch
 ---
-#create rolebinding for keel view service account in kube-system namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -58,7 +55,7 @@ data:
         template ANY AAAA . {
           rcode NXDOMAIN
         }
-        kubernetes cluster.local {SERVICE_CIDR}
+        kubernetes cluster.local {{.DNSSvcIp}}
         prometheus :9153
         forward . /etc/resolv.conf
         cache 30
@@ -87,9 +84,9 @@ spec:
       labels:
         k8s-app: coredns
     spec:
-      {HOST_ALIASES}
+      {{.HostAliases}}
       nodeSelector:
-        {CLUSTER_NODESELECT}
+        {{.NodeSelector}}
       tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
@@ -107,13 +104,13 @@ spec:
             path: Corefile
       - name: dns-hosts-cm
         configMap:
-          name: dns-hosts-configmap
+          name: dns-hosts
           items:
             - key: dns-hosts-key
               path: dns-hosts.conf
       containers:
       - name: coredns
-        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_COREDNS}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -172,7 +169,7 @@ metadata:
 spec:
   selector:
     k8s-app: coredns
-  clusterIP: {DNS_SVC_IP}
+  clusterIP: {{.DNSSvcIp}}
   ports:
   - name: dns
     port: 53

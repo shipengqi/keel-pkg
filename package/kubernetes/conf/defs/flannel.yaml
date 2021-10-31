@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kube-flannel-ds-amd64
+  name: kube-flannel-ds
   namespace: kube-system
   labels:
     tier: node
@@ -31,8 +31,26 @@ spec:
       imagePullSecrets:
         - name: registrypullsecret
       initContainers:
+#      - name: install-cni-plugin
+#        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.InitImageName}}
+#        command:
+#          - cp
+#        args:
+#          - -f
+#          - /flannel
+#          - /opt/cni/bin/flannel
+#        resources:
+#          requests:
+#            cpu: "100m"
+#            memory: "100Mi"
+#          limits:
+#            cpu: "100m"
+#            memory: "100Mi"
+#        volumeMounts:
+#          - name: cni-plugin
+#            mountPath: /opt/cni/bin
       - name: install-cni
-        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.InitImageName}}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
         command:
         - cp
         args:
@@ -54,6 +72,11 @@ spec:
       containers:
       - name: kube-flannel
         image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
+        command:
+          - /bin/sh
+        args:
+          - -c
+          - "eval $(more /iface/$CURRENT_NODE_NAME); exec /opt/bin/flanneld"
         resources:
           requests:
             cpu: "100m"
@@ -68,6 +91,8 @@ spec:
             - NET_ADMIN
             - NET_RAW
         env:
+        - name: KUBERNETES_SERVICE_PORT
+          value: "{{.K8SAPIServerPort}}"
         - name: CURRENT_NODE_NAME
           valueFrom:
             fieldRef:
@@ -80,12 +105,18 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: FLANNELD_KUBE_SUBNET_MGR
+          value: "true"
+        - name: FLANNELD_NET_CONFIG_PATH
+          value: /etc/kube-flannel/net-conf.json
+        - name: FLANNELD_SUBNET_FILE
+          value: /run/flannel/subnet.env
         volumeMounts:
         - name: iface-cfg
           mountPath: /iface/
           readOnly: true
         - name: run
-          mountPath: /run
+          mountPath: /run/flannel
         - name: cni-conf
           mountPath: /etc/cni/net.d/
           readOnly: true
@@ -96,7 +127,7 @@ spec:
       volumes:
         - name: run
           hostPath:
-            path: /run
+            path: /run/flannel
         - name: cni-kubelet
           hostPath:
             path: {{.KeelHome}}/cni/flannel/conf

@@ -1,4 +1,5 @@
 # RBAC config for kube-apiserver to access kubelet-server
+# https://github.com/kubernetes/kubernetes/issues/55872
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

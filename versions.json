@@ -3,7 +3,7 @@
   "images": [
     {"name":  "pause", "tag": "3.3"},
     {"name":  "etcd", "tag": "3.4.9"},
-    {"name":  "flannel", "tag": "0.5.5"},
+    {"name":  "flannel", "tag": "v0.15.0"},
     {"name":  "kube-proxy", "tag": "v1.22.2"},
     {"name":  "kube-apiserver", "tag": "v1.22.2"},
     {"name":  "kube-controller-manager", "tag": "v1.22.2"},

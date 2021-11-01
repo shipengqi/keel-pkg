@@ -29,6 +29,7 @@
     "-rc."
   ],
   "patches": [
-    "registry-1.docker.io/flannelcni/flannel-cni-plugin"
+    "registry-1.docker.io/flannelcni/flannel-cni-plugin",
+    "quay.io/coreos/flannel"
   ]
 }

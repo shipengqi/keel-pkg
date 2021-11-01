@@ -12,7 +12,6 @@
   "prefixes": [
     "kube",
     "k8s",
-    "flannel",
     "fluentd",
     "fluent-bit",
     "hyperkube",
@@ -26,10 +25,19 @@
   "exclude": [
     "-beta",
     "-alpha",
-    "-rc."
+    "-rc.",
+    "-rc1-",
+    "-rc2-",
+    "-rc3-"
   ],
   "patches": [
     "registry-1.docker.io/flannelcni/flannel-cni-plugin",
+    "registry-1.docker.io/coredns/coredns",
+    "registry-1.docker.io/coredns/coredns-s390x",
+    "registry-1.docker.io/coredns/coredns-ppc64le",
+    "registry-1.docker.io/coredns/coredns-arm64",
+    "registry-1.docker.io/coredns/coredns-arm",
+    "registry-1.docker.io/coredns/coredns-amd64",
     "quay.io/coreos/flannel"
   ]
 }

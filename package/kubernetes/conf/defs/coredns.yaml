@@ -55,7 +55,7 @@ data:
         template ANY AAAA . {
           rcode NXDOMAIN
         }
-        kubernetes cluster.local {{.DNSSvcIp}}
+        kubernetes cluster.local {{.ServiceCIDR}}
         prometheus :9153
         forward . /etc/resolv.conf
         cache 30

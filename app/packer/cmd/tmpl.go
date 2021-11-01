@@ -9,12 +9,12 @@ import (
 
 const (
 	CorednsImageName = "coredns"
+	FlannelImageName = "flannel"
 )
 
 func normalizeImgName(name, tag, arch string) string {
-	// image name needs to add arch string, except for the coredns, metrics image
-	if name == CorednsImageName {
-		return fmt.Sprintf("%s:%s", name, tag)
+	if name == FlannelImageName {
+		return fmt.Sprintf("%s:%s-%s", name, tag, arch)
 	}
 	return fmt.Sprintf("%s-%s:%s", name, arch, tag)
 }

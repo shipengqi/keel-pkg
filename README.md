@@ -149,6 +149,7 @@ make clean        - remove binary file and prune image
 - [Huawei Swr](https://console-intl.huaweicloud.com/swr/?agencyId=1e02890d062a42f9be14b82feaa5b711&region=cn-east-3&locale=zh-cn#/app/swr/huaweiOfficialList)
   - [Swr doc](https://support.huaweicloud.com/intl/zh-cn/productdesc-swr/swr_03_0001.html)
 - [quay.io](https://quay.io/organization/coreos)
+  - [flannel](https://quay.io/repository/coreos/flannel?tab=tags)
 
 ## Reference
 - https://github.com/containerd/containerd

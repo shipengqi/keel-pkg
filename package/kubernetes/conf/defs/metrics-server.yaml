@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: itom-metrics
+  name: kube-metrics
   namespace: kube-system
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: microfocus:keel:itom-metrics
+  name: microfocus:keel:kube-metrics
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -69,14 +69,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: microfocus:keel:itom-metrics
+  name: microfocus:keel:kube-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: microfocus:keel:itom-metrics
+  name: microfocus:keel:kube-metrics
 subjects:
 - kind: ServiceAccount
-  name: itom-metrics
+  name: kube-metrics
   namespace: kube-system
 
 ---
@@ -130,19 +130,19 @@ spec:
       labels:
         k8s-app: metrics-server
     spec:
-      serviceAccountName: itom-metrics
+      serviceAccountName: kube-metrics
       priorityClassName: system-cluster-critical
       imagePullSecrets:
         - name: registrypullsecret
       nodeSelector:
-        {CLUSTER_NODESELECT}
+        {{.NodeSelector}}
       tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
         effect: "NoSchedule"
       containers:
         - name: metrics-server
-          image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_METRICS_SERVER}
+          image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -179,12 +179,12 @@ spec:
             - name: server-cert
               mountPath: /var/run/secrets/server-cert
               readOnly: true
-      securityContext:
-        runAsUser: {SYSTEM_USER_ID}
-        runAsGroup: {SYSTEM_GROUP_ID}
-        fsGroup: {SYSTEM_GROUP_ID}
-        supplementalGroups: [{SYSTEM_GROUP_ID}]
+#      securityContext:
+#        runAsUser: {SYSTEM_USER_ID}
+#        runAsGroup: {SYSTEM_GROUP_ID}
+#        fsGroup: {SYSTEM_GROUP_ID}
+#        supplementalGroups: [{SYSTEM_GROUP_ID}]
       volumes:
         - name: server-cert
           secret:
-            secretName: metrics-server-cert
+            secretName: metrics-server-crt

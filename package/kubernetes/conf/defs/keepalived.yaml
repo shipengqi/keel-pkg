@@ -3,13 +3,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: itom-keel-keepalived
+  name: keel-keepalived
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: itom-keel-keepalived-role
+  name: keel-keepalived-role
 rules:
 - apiGroups:
   - ""
@@ -24,30 +24,30 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: itom-keel-keepalived:itom-keel-keepalived-role
+  name: keel-keepalived:keel-keepalived-role
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: itom-keel-keepalived-role
+  name: keel-keepalived-role
 subjects:
 - kind: ServiceAccount
-  name: itom-keel-keepalived
+  name: keel-keepalived
   namespace: kube-system
 ---
-# create KeepAlived Daemonset
+# create keepalived Daemonset
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: itom-keel-keepalived
+  name: keel-keepalived
   namespace: kube-system
   labels:
     tier: node
-    app: itom-keel-keepalived
+    app: keel-keepalived
 spec:
   selector:
     matchLabels:
       tier: node
-      app: itom-keel-keepalived
+      app: keel-keepalived
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -57,7 +57,7 @@ spec:
     metadata:
       labels:
         tier: node
-        app: itom-keel-keepalived
+        app: keel-keepalived
     spec:
       hostNetwork: true
       priorityClassName: system-cluster-critical
@@ -70,12 +70,12 @@ spec:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
         effect: "NoSchedule"
-      serviceAccountName: itom-keel-keepalived
+      serviceAccountName: keel-keepalived
       imagePullSecrets:
         - name: registrypullsecret
       containers:
       - name: keepalived
-        image: {DOCKER_REPOSITORY}/{REGISTRY_ORGNAME}/{IMAGE_KEEPALIVED}
+        image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
         resources:
           requests:
             cpu: "100m"
@@ -90,7 +90,7 @@ spec:
             - NET_ADMIN
         env:
         - name: K8S_APISERVER
-          value: 127.0.0.1:{MASTER_API_SSL_PORT}
+          value: 127.0.0.1:{{.K8SAPIServerPort}}
         - name: THIS_NODE_NAME
           valueFrom:
             fieldRef:

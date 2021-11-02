@@ -38,6 +38,7 @@
     "registry-1.docker.io/coredns/coredns-arm64",
     "registry-1.docker.io/coredns/coredns-arm",
     "registry-1.docker.io/coredns/coredns-amd64",
-    "quay.io/coreos/flannel"
+    "quay.io/coreos/flannel",
+    "k8s.gcr.io/metrics-server/metrics-server"
   ]
 }

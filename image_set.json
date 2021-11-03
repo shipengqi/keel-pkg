@@ -13,7 +13,9 @@
     "pause",
     "alpine-iptables",
     "debian-iptables",
-    "federation"
+    "federation",
+    "metrics-server/",
+    "ingress-nginx/"
   ],
   "exclude": [
     "kubectl",

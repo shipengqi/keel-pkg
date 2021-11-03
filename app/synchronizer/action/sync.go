@@ -188,7 +188,18 @@ func (s *synca) fetchExtraTagList() (Images, error) {
 			ns = words[1]
 			name = words[2]
 		}
+		excludeStrs := s.opts.ImageSet.Exclude
 		for _, tag := range tags {
+			excluded := false
+			for sk := range excludeStrs {
+				if strings.Contains(tag, excludeStrs[sk]) {
+					excluded = true
+					break
+				}
+			}
+			if excluded {
+				continue
+			}
 			images = append(images, &Image{
 				Repo: repo,
 				Ns:   ns,

@@ -131,14 +131,21 @@ make clean        - remove binary file and prune image
   "exclude": [
     "-beta",
     "-alpha"
+  ],
+  "extras": [
+    "quay.io/coreos/flannel",
+    "registry-1.docker.io/coredns/coredns",
+    "registry-1.docker.io/library/registry"
   ]
 }
 ```
 
 - `names` contains a list of images that need to be synchronized (For `k8s.gcr.io`).
 - `prefixes` contains a list of name prefixes of images that need to be synchronized (For `k8s.gcr.io`).
-- `exclude` if the image name contains these strings then it will not be synchronized (For `k8s.gcr.io`).
+- `exclude` if the image name or tag contains these strings then it will not be synchronized (For `k8s.gcr.io`).
 - `extras` extra image list that need to be synchronized.
+
+Priority: `names > extras > exclude > prefixes`.
 
 ### pack workflow
 

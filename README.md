@@ -1,10 +1,12 @@
 # keel-pkg
+
 keel tools for syncing images from **k8s.gcr.io** and packing kubernetes.tar.gz.
 
 ![Actions sync workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/sync.yml/badge.svg)
 ![Actions pack workflow](https://github.com/shipengqi/keel-pkg/actions/workflows/pack.yml/badge.svg)
 
 ## Usage
+
 ```bash
 $ ./packer -h
 Pack kubernetes.tar.gz
@@ -47,7 +49,9 @@ Flags:
 ```
 
 ## Example
+
 sync images:
+
 ```bash
 $ ./synctl sync \
 --db ${HOME}/sync.bolt.db \
@@ -59,6 +63,7 @@ $ ./synctl sync \
 ```
 
 ## How to build
+
 ```bash
 make              - help
 make build        - build synctl and packer
@@ -71,6 +76,7 @@ make clean        - remove binary file and prune image
 ```
 
 `versions.json` version of components for packing:
+
 ```json
 {
   "arch": "amd64",
@@ -95,6 +101,7 @@ make clean        - remove binary file and prune image
 ```
 
 `image_set.json` image list for syncing:
+
 ```json
 {
   "names": [
@@ -128,12 +135,13 @@ make clean        - remove binary file and prune image
 }
 ```
 
-- `names` contains a list of images that need to be synchronized.
-- `prefixes` contains a list of name prefixes of images that need to be synchronized.
-- `exclude` if the image name contains these strings then it will not be synchronized.
-- `patches`
+- `names` contains a list of images that need to be synchronized (For `k8s.gcr.io`).
+- `prefixes` contains a list of name prefixes of images that need to be synchronized (For `k8s.gcr.io`).
+- `exclude` if the image name contains these strings then it will not be synchronized (For `k8s.gcr.io`).
+- `extras` extra image list that need to be synchronized.
 
 ### pack workflow
+
 ![pack workflow](./pack_workflow.png)
 
 - `set beat version`, will add a beta suffix to the package name. e.g. kube-1.22.2-amd64-beta.tar.gz.
@@ -143,6 +151,7 @@ make clean        - remove binary file and prune image
 - `set repo`, if the value is not "dockerhub", will push the package to the qiniu cloud.
 
 ## Registry
+
 - [Google GCR](https://console.cloud.google.com/gcr/images/google-containers)
 - [AliCloud ACR](https://cr.console.aliyun.com/cn-hangzhou/instances/images)
   - [ACR doc](https://help.aliyun.com/document_detail/257112.html?spm=5176.166170.J_5253785160.5.286851646Ug5KU)
@@ -152,13 +161,15 @@ make clean        - remove binary file and prune image
   - [flannel](https://quay.io/repository/coreos/flannel?tab=tags)
 
 ## Reference
-- https://github.com/containerd/containerd
-- https://github.com/containerd/containerd/blob/main/docs/RUNC.md
-- https://github.com/opencontainers/runc
-- https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md
-- https://kubernetes.io/releases/download/
-- https://blog.csdn.net/networken/article/details/84571373
-- https://github.com/actions/upload-artifact/issues/8
-- https://github.com/actions/upload-artifact/tree/v2-preview#environment-variables-and-tilde-expansion
-- https://hub.docker.com/r/flannelcni/flannel-cni-plugin
-- https://github.com/flannel-io/flannel/issues/784
+
+- <https://github.com/containerd/containerd>
+- <https://github.com/containerd/containerd/blob/main/docs/RUNC.md>
+- <https://github.com/opencontainers/runc>
+- <https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md>
+- <https://kubernetes.io/releases/download/>
+- <https://blog.csdn.net/networken/article/details/84571373>
+- <https://github.com/actions/upload-artifact/issues/8>
+- <https://github.com/actions/upload-artifact/tree/v2-preview#environment-variables-and-tilde-expansion>
+- <https://hub.docker.com/r/flannelcni/flannel-cni-plugin>
+- <https://github.com/flannel-io/flannel/issues/784>
+- <https://github.com/fluent/fluentd>

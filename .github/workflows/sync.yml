@@ -58,7 +58,9 @@ jobs:
           --push-ns=keel  \
           --command-timeout ${TIMEOUT:=2h}  \
           --limit ${LIMIT:=3} \
-          --image-set ${HOME}/sync/image_set.json
+          --image-set ${HOME}/sync/image_set.json \
+          --addition-ns "metrics-server" \
+          --addition-ns "ingress-nginx"
       - name: post sync success
         run: |
           /bin/bash .github/scripts/post-sync.sh

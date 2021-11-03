@@ -2,8 +2,9 @@ package action
 
 import (
 	"context"
-	"github.com/shipengqi/keel-pkg/lib/log"
 	"strings"
+
+	"github.com/shipengqi/keel-pkg/lib/log"
 )
 
 type CloseFunc func() error
@@ -18,8 +19,8 @@ type Interface interface {
 }
 
 type action struct {
-	name  string
-	ctx   context.Context
+	name string
+	ctx  context.Context
 }
 
 func (a *action) Name() string {

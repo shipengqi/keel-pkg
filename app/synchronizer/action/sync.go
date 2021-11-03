@@ -3,12 +3,12 @@ package action
 import (
 	"context"
 	"fmt"
-	"github.com/docker/docker/registry"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/docker/docker/registry"
 	"github.com/docker/docker/api/types"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
@@ -108,14 +108,14 @@ func (s *synca) Run() (err error) {
 		return err
 	}
 
-	log.Debugf("add [%d] patch images", len(s.opts.ImageSet.Patches))
-	patches, err := s.fetchPatchTagList()
+	log.Debugf("add [%d] extra images", len(s.opts.ImageSet.Extras))
+	extras, err := s.fetchExtraTagList()
 	if err != nil {
 		return err
 	}
-	if len(patches) > 0 {
-		log.Debugf("found [%d] patch image tags", len(patches))
-		images = append(images, patches...)
+	if len(extras) > 0 {
+		log.Debugf("found [%d] extra image tags", len(extras))
+		images = append(images, extras...)
 	}
 	sort.Sort(images)
 
@@ -128,22 +128,22 @@ func (s *synca) Run() (err error) {
 	return
 }
 
-func (s *synca) fetchPatchTagList() (Images, error) {
-	patches := s.opts.ImageSet.Patches
+func (s *synca) fetchExtraTagList() (Images, error) {
+	extras := s.opts.ImageSet.Extras
 	var images Images
-	for i := 0; i < len(patches); i++ {
-		patch := patches[i]
-		log.Debugf("fetch tags of [%s] ...", patch)
-		words := strings.Split(patch, "/")
+	for i := 0; i < len(extras); i++ {
+		extra := extras[i]
+		log.Debugf("fetch tags of [%s] ...", extra)
+		words := strings.Split(extra, "/")
 		if len(words) < 2 || len(words) > 3 {
-			log.Warnf("invalid image format [%s]", patch)
+			log.Warnf("invalid image format [%s]", extra)
 			continue
 		}
 		baseName := strings.Join(words[1:], "/")
 		log.Debugf("parse repo [%s], basename [%s]", words[0], baseName)
 		tags, err := s.gcr.AllTagsWithRepo(words[0], baseName)
 		if err != nil {
-			log.Warnf("fetch tags of [%s] failed!", patch)
+			log.Warnf("fetch tags of [%s] failed!", extra)
 			continue
 		}
 		var ns string

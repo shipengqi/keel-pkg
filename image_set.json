@@ -5,24 +5,28 @@
     "etcd-arm",
     "etcd-arm64",
     "etcd-ppc64le",
-    "etcd-s390x",
-    "coredns",
-    "nginx"
+    "etcd-s390x"
   ],
   "prefixes": [
     "kube",
-    "k8s",
-    "fluentd",
-    "fluent-bit",
     "hyperkube",
-    "metrics-server",
     "pause",
     "alpine-iptables",
     "debian-iptables",
-    "federation",
-    "nginx-ingress"
+    "federation"
   ],
   "exclude": [
+    "kubectl",
+    "kubernetes-dashboard",
+    "kubernetes-kafka",
+    "kubernetes-zookeeper",
+    "kubelet-to-gcm",
+    "kubekins",
+    "kube2sky",
+    "kube-ui",
+    "kube-nethealth",
+    "kube-discovery",
+    "e2e-test",
     "-beta",
     "-alpha",
     "-rc.",
@@ -30,7 +34,8 @@
     "-rc2-",
     "-rc3-"
   ],
-  "patches": [
+  "extras": [
+    "quay.io/coreos/flannel",
     "registry-1.docker.io/flannelcni/flannel-cni-plugin",
     "registry-1.docker.io/coredns/coredns",
     "registry-1.docker.io/coredns/coredns-s390x",
@@ -38,7 +43,18 @@
     "registry-1.docker.io/coredns/coredns-arm64",
     "registry-1.docker.io/coredns/coredns-arm",
     "registry-1.docker.io/coredns/coredns-amd64",
-    "quay.io/coreos/flannel",
-    "k8s.gcr.io/metrics-server/metrics-server"
+    "registry-1.docker.io/kubernetesui/dashboard",
+    "registry-1.docker.io/kubernetesui/dashboard-arm",
+    "registry-1.docker.io/kubernetesui/dashboard-arm64",
+    "registry-1.docker.io/kubernetesui/dashboard-s390x",
+    "registry-1.docker.io/kubernetesui/dashboard-ppc64le",
+    "registry-1.docker.io/kubernetesui/dashboard-amd64",
+    "registry-1.docker.io/kubernetesui/metrics-scraper",
+    "registry-1.docker.io/kubernetesui/metrics-scraper-arm",
+    "registry-1.docker.io/kubernetesui/metrics-scraper-arm64",
+    "registry-1.docker.io/kubernetesui/metrics-scraper-s390x",
+    "registry-1.docker.io/kubernetesui/metrics-scraper-ppc64le",
+    "registry-1.docker.io/kubernetesui/metrics-scraper-amd64",
+    "registry-1.docker.io/library/registry"
   ]
 }

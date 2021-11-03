@@ -4,7 +4,7 @@ type ImageSet struct {
 	Names    []string `json:"names"`
 	Prefixes []string `json:"prefixes"`
 	Exclude  []string `json:"exclude"`
-	Patches  []string `json:"patches"`
+	Extras   []string `json:"extras"`
 }
 
 type Version struct {

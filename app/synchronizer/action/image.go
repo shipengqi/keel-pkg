@@ -5,8 +5,8 @@ import "fmt"
 type Images []*Image
 
 type Image struct {
-	Repo string // for patch images
-	Ns   string // for patch images
+	Repo string // for extra images
+	Ns   string // for extra images
 	Name string // basename
 	Tag  string
 }

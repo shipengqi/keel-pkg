@@ -98,31 +98,7 @@ func (c *Client) AllImages() ([]string, error) {
 		allBaseNames = append(allBaseNames, baseNames...)
 	}
 
-	var filters []string
-	requiredImages := c.opts.ImageSet.Names
-	requiredPrefix := c.opts.ImageSet.Prefixes
-	// filter useful images
-	for n := range allBaseNames {
-		found := false
-		for i := range requiredImages {
-			if allBaseNames[n] == requiredImages[i] {
-				filters = append(filters, allBaseNames[n])
-				found = true
-				break
-			}
-		}
-		if found {
-			continue
-		}
-		for p := range requiredPrefix {
-			if strings.HasPrefix(allBaseNames[n], requiredPrefix[p]) {
-				filters = append(filters, allBaseNames[n])
-				break
-			}
-		}
-	}
-
-	return filters, nil
+	return allBaseNames, nil
 }
 
 func (c *Client) AllTagsWithRepo(repo, baseName string) ([]string, error) {

@@ -11,3 +11,4 @@ docker cp syncdb:/sync.bolt.db ${SYNC_HOME}
 docker kill syncdb
 
 ls -lh  ${SYNC_HOME}
+cat ${SYNC_HOME}/image_set.json

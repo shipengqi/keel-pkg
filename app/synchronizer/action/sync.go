@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/docker/docker/registry"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/registry"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 
@@ -102,8 +102,42 @@ func (s *synca) Run() (err error) {
 		return err
 	}
 
-	log.Infof("found images count: %d in %s", len(pubs), gcrc.DefaultGcrRepo)
-	images, err := s.fetchImageTagList(pubs)
+	var filterImgs []string
+	requiredImages := s.opts.ImageSet.Names
+	requiredPrefix := s.opts.ImageSet.Prefixes
+	// filter useful images
+	for n := range pubs {
+		found := false
+		for i := range requiredImages {
+			if pubs[n] == requiredImages[i] {
+				filterImgs = append(filterImgs, pubs[n])
+				found = true
+				break
+			}
+		}
+		if found {
+			continue
+		}
+		excludeStrs := s.opts.ImageSet.Exclude
+		excluded := false
+		for ek := range excludeStrs {
+			if strings.Contains(pubs[n], excludeStrs[ek]) {
+				excluded = true
+			}
+		}
+		if excluded {
+			continue
+		}
+		for p := range requiredPrefix {
+			if strings.HasPrefix(pubs[n], requiredPrefix[p]) {
+				filterImgs = append(filterImgs, pubs[n])
+				break
+			}
+		}
+	}
+
+	log.Infof("found images count: %d in %s", len(filterImgs), gcrc.DefaultGcrRepo)
+	images, err := s.fetchImageTagList(filterImgs)
 	if err != nil {
 		return err
 	}

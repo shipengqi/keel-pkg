@@ -391,7 +391,16 @@ func (s *synca) check(image *Image) (uint32, bool) {
 }
 
 func (s *synca) pushOne(image *Image) error {
-	dst := fmt.Sprintf("%s/%s/%s:%s", s.opts.PushToRepo, s.opts.PushToNS, image.Name, image.Tag)
+	var imgName string
+	words := strings.Split(image.Name, "/")
+	if len(words) == 2 {
+		imgName = words[1]
+	} else if len(words) == 1 {
+		imgName = words[0]
+	} else {
+		return errors.Errorf("invalid image name [%s]", image.Name)
+	}
+	dst := fmt.Sprintf("%s/%s/%s:%s", s.opts.PushToRepo, s.opts.PushToNS, imgName, image.Tag)
 	log.Debugf("syncing [%s] to [%s] ...", image.String(), dst)
 	return s.gcr.Sync(image.String(), dst)
 }

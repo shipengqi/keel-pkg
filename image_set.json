@@ -29,10 +29,7 @@
     "e2e-test",
     "-beta",
     "-alpha",
-    "-rc.",
-    "-rc1-",
-    "-rc2-",
-    "-rc3-"
+    "-rc"
   ],
   "extras": [
     "quay.io/coreos/flannel",

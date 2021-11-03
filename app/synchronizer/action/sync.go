@@ -123,6 +123,7 @@ func (s *synca) Run() (err error) {
 		for ek := range excludeStrs {
 			if strings.Contains(pubs[n], excludeStrs[ek]) {
 				excluded = true
+				break
 			}
 		}
 		if excluded {
@@ -252,6 +253,7 @@ func (s *synca) fetchImageTagList(pubs []string) (Images, error) {
 					for sk := range excludeStrs {
 						if strings.Contains(tag, excludeStrs[sk]) {
 							excluded = true
+							break
 						}
 					}
 					if excluded {

@@ -5,7 +5,8 @@
     "etcd-arm",
     "etcd-arm64",
     "etcd-ppc64le",
-    "etcd-s390x"
+    "etcd-s390x",
+    "metrics-server/metrics-server"
   ],
   "prefixes": [
     "kube",
@@ -14,7 +15,6 @@
     "alpine-iptables",
     "debian-iptables",
     "federation",
-    "metrics-server/",
     "ingress-nginx/"
   ],
   "exclude": [

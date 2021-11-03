@@ -392,6 +392,7 @@ func (s *synca) check(image *Image) (uint32, bool) {
 
 func (s *synca) pushOne(image *Image) error {
 	var imgName string
+	// For additional namespace of k8s.gcr.io
 	words := strings.Split(image.Name, "/")
 	if len(words) == 2 {
 		imgName = words[1]

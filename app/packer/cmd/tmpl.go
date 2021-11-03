@@ -8,13 +8,17 @@ import (
 )
 
 const (
-	CorednsImageName = "coredns"
-	FlannelImageName = "flannel"
+	ImageNameCoredns       = "coredns"
+	ImageNameFlannel       = "flannel"
+	ImageNameMetricsServer = "metrics-server"
 )
 
 func normalizeImgName(name, tag, arch string) string {
-	if name == FlannelImageName {
+	if name == ImageNameFlannel {
 		return fmt.Sprintf("%s:%s-%s", name, tag, arch)
+	}
+	if name == ImageNameMetricsServer {
+		return fmt.Sprintf("%s:%s", name, tag)
 	}
 	return fmt.Sprintf("%s-%s:%s", name, arch, tag)
 }

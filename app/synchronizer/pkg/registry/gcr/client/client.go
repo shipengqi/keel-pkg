@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/containers/image/v5/copy"

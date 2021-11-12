@@ -10,17 +10,22 @@ import (
 const (
 	ImageNameCoredns       = "coredns"
 	ImageNameFlannel       = "flannel"
+	ImageNameBusybox       = "busybox"
 	ImageNameMetricsServer = "metrics-server"
 )
 
 func normalizeImgName(name, tag, arch string) string {
-	if name == ImageNameFlannel {
-		return fmt.Sprintf("%s:%s-%s", name, tag, arch)
+	var normalized string
+	switch name {
+	case ImageNameFlannel:
+		normalized = fmt.Sprintf("%s:%s-%s", name, tag, arch)
+	case ImageNameMetricsServer, ImageNameBusybox:
+		normalized = fmt.Sprintf("%s:%s", name, tag)
+	default:
+		normalized = fmt.Sprintf("%s-%s:%s", name, arch, tag)
 	}
-	if name == ImageNameMetricsServer {
-		return fmt.Sprintf("%s:%s", name, tag)
-	}
-	return fmt.Sprintf("%s-%s:%s", name, arch, tag)
+
+	return normalized
 }
 
 func uriTmplList(vs *deps.Versions) ([]string, error) {

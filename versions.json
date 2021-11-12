@@ -1,36 +1,82 @@
 {
   "arch": "amd64",
   "images": [
-    {"name":  "busybox", "tag": "1.27.2"},
-    {"name":  "pause", "tag": "3.3"},
-    {"name":  "etcd", "tag": "3.4.9"},
-    {"name":  "flannel", "tag": "v0.15.0"},
-    {"name":  "kube-proxy", "tag": "v1.22.2"},
-    {"name":  "kube-apiserver", "tag": "v1.22.2"},
-    {"name":  "kube-controller-manager", "tag": "v1.22.2"},
-    {"name":  "kube-scheduler", "tag": "v1.22.2"},
-    {"name":  "coredns", "tag": "1.8.6"},
-    {"name":  "metrics-server", "tag": "v0.5.1"}
+    {
+      "name": "busybox",
+      "tag": "1.27.2"
+    },
+    {
+      "name": "pause",
+      "tag": "3.3"
+    },
+    {
+      "name": "etcd",
+      "tag": "3.4.9"
+    },
+    {
+      "name": "flannel",
+      "tag": "v0.15.0"
+    },
+    {
+      "name": "kube-proxy",
+      "tag": "v1.22.2"
+    },
+    {
+      "name": "kube-apiserver",
+      "tag": "v1.22.2"
+    },
+    {
+      "name": "kube-controller-manager",
+      "tag": "v1.22.2"
+    },
+    {
+      "name": "kube-scheduler",
+      "tag": "v1.22.2"
+    },
+    {
+      "name": "coredns",
+      "tag": "1.8.6"
+    },
+    {
+      "name": "metrics-server",
+      "tag": "v0.5.1"
+    }
   ],
   "components": [
     {
-      "name":  "containerd",
+      "name": "containerd",
       "tag": "1.5.7",
       "uri": "https://github.com/containerd/containerd/releases/download/v{{.Tag}}/containerd-{{.Tag}}-linux-{{.Arch}}.tar.gz"
     },
     {
-      "name":  "runc",
+      "name": "runc",
       "tag": "1.0.2",
       "uri": "https://github.com/opencontainers/runc/releases/download/v{{.Tag}}/runc.{{.Arch}}"
     },
     {
-      "name":  "crictl",
+      "name": "crictl",
       "tag": "1.22.0",
       "uri": "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{.Tag}}/crictl-v{{.Tag}}-linux-{{.Arch}}.tar.gz"
     },
-    {"name":  "kubectl", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubectl"},
-    {"name":  "kubelet", "tag": "1.22.2", "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubelet"},
-    {"name":  "flannel", "tag": "1.0", "uri": "https://github.com/flannel-io/cni-plugin/releases/download/v{{.Tag}}/flannel-{{.Arch}}"},
-    {"name":  "cni-plugins", "tag": "1.0.1", "uri": "https://github.com/containernetworking/plugins/releases/download/v{{.Tag}}/cni-plugins-linux-{{.Arch}}-v{{.Tag}}.tgz"}
+    {
+      "name": "kubectl",
+      "tag": "1.22.2",
+      "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubectl"
+    },
+    {
+      "name": "kubelet",
+      "tag": "1.22.2",
+      "uri": "https://dl.k8s.io/v{{.Tag}}/bin/linux/{{.Arch}}/kubelet"
+    },
+    {
+      "name": "flannel",
+      "tag": "1.0",
+      "uri": "https://github.com/flannel-io/cni-plugin/releases/download/v{{.Tag}}/flannel-{{.Arch}}"
+    },
+    {
+      "name": "cni-plugins",
+      "tag": "1.0.1",
+      "uri": "https://github.com/containernetworking/plugins/releases/download/v{{.Tag}}/cni-plugins-linux-{{.Arch}}-v{{.Tag}}.tgz"
+    }
   ]
 }

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-recycler
+  namespace: kube-system
+spec:
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: registrypullsecret
+  tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+  volumes:
+  - name: vol
+    persistentVolumeClaim:
+      claimName: default
+  containers:
+  - name: pv-recycler
+    image: {{.ImageRegistry}}/{{.ImageRegistryOrg}}/{{.ImageName}}
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/sh", "-c", "test -e /scrub && rm -rf /scrub/..?* /scrub/.[!.]* /scrub/* && test -z \"$(ls -A /scrub)\" || exit 1"]
+    volumeMounts:
+    - name: vol
+      mountPath: /scrub

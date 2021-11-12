@@ -1,6 +1,7 @@
 {
   "arch": "amd64",
   "images": [
+    {"name":  "busybox", "tag": "1.27.2"},
     {"name":  "pause", "tag": "3.3"},
     {"name":  "etcd", "tag": "3.4.9"},
     {"name":  "flannel", "tag": "v0.15.0"},

@@ -19,7 +19,8 @@ import (
 )
 
 const (
-	NameSync = "sync"
+	NameSync                  = "sync"
+	SkipSyncBodySumNum uint32 = 1
 )
 
 type SyncOptions struct {
@@ -366,6 +367,10 @@ func (s *synca) check(image *Image) (uint32, bool) {
 		var mErr error
 		bodySum, mErr = s.gcr.ManifestCheckSum(imgFullName)
 		if mErr != nil {
+			if mErr == gcrc.ErrUnsupportedMediaType {
+				bodySum = SkipSyncBodySumNum
+				return nil
+			}
 			return mErr
 		}
 		if bodySum == 0 {
@@ -375,6 +380,10 @@ func (s *synca) check(image *Image) (uint32, bool) {
 	})
 	if err != nil {
 		log.Errorf("failed to get image [%s] manifest, error: %s", imgFullName, err)
+		return 0, false
+	}
+	if bodySum == SkipSyncBodySumNum {
+		log.Debugf("skip to sync %s, unsupported media type.", imgFullName)
 		return 0, false
 	}
 	diff, err = s.db.Diff(image.Key(), bodySum)

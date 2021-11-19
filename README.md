@@ -180,3 +180,4 @@ Priority: `names > extras > exclude > prefixes`.
 - <https://hub.docker.com/r/flannelcni/flannel-cni-plugin>
 - <https://github.com/flannel-io/flannel/issues/784>
 - <https://github.com/fluent/fluentd>
+- <https://github.com/containerd/containerd/issues/4756>

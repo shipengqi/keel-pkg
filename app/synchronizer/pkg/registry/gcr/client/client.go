@@ -27,10 +27,17 @@ const (
 	DefaultRetryInterval = time.Second * 5
 	DefaultTimeout       = time.Second * 20
 	DefaultPushTimeout   = time.Minute * 15
+	// LegacyConfigMediaType should be replaced by OCI image spec.
+	// More detail: docker/distribution#1622
+	LegacyConfigMediaType = "application/octet-stream"
 )
 
 const (
 	_defaultGcrImagesListAPI = "https://k8s.gcr.io/v2/tags/list"
+)
+
+var (
+	ErrUnsupportedMediaType = errors.New("Unsupported MediaType")
 )
 
 type Options struct {
@@ -176,6 +183,9 @@ func (c *Client) ManifestCheckSum(imageName string) (uint32, error) {
 	mType := manifest.GuessMIMEType(mbs)
 	if mType == "" {
 		return 0, errors.Errorf("parse image [%s] manifest type", imageName)
+	} else if mType == LegacyConfigMediaType {
+		// unsupported media type
+		return 0, ErrUnsupportedMediaType
 	}
 	if mType != manifest.DockerV2ListMediaType && mType != specv1.MediaTypeImageIndex {
 		_, err = manifest.FromBlob(mbs, mType)

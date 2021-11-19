@@ -180,13 +180,14 @@ func (c *Client) ManifestCheckSum(imageName string) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
+	if !mediaTypeSupported(mbs) {
+		return 0, ErrUnsupportedMediaType
+	}
 	mType := manifest.GuessMIMEType(mbs)
 	if mType == "" {
 		return 0, errors.Errorf("parse image [%s] manifest type", imageName)
-	} else if mType == LegacyConfigMediaType {
-		// unsupported media type
-		return 0, ErrUnsupportedMediaType
 	}
+
 	if mType != manifest.DockerV2ListMediaType && mType != specv1.MediaTypeImageIndex {
 		_, err = manifest.FromBlob(mbs, mType)
 		if err != nil {
@@ -225,4 +226,20 @@ func (c *Client) allTagsWithRepo(repo, baseName string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(c.opts.Ctx, c.opts.ReqTimeout)
 	defer cancel()
 	return docker.GetRepositoryTags(ctx, authCtx, ref)
+}
+
+func mediaTypeSupported(mbs []byte) bool {
+	meta := struct {
+		MediaType     string      `json:"mediaType"`
+		SchemaVersion int         `json:"schemaVersion"`
+		Signatures    interface{} `json:"signatures"`
+	}{}
+	if err := jsoniter.Unmarshal(mbs, &meta); err != nil {
+		return false
+	}
+	if err := manifest.SupportedSchema2MediaType(meta.MediaType); err != nil {
+		return false
+	}
+
+	return true
 }

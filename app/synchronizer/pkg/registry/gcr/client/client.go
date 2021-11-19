@@ -40,6 +40,17 @@ var (
 	ErrUnsupportedMediaType = errors.New("Unsupported MediaType")
 )
 
+type ManifestConfig struct {
+	MediaType string `json:"mediaType"`
+}
+
+type Manifest struct {
+	MediaType     string          `json:"mediaType"`
+	SchemaVersion int             `json:"schemaVersion"`
+	Signatures    interface{}     `json:"signatures"`
+	Config        *ManifestConfig `json:"config""`
+}
+
 type Options struct {
 	Username      string
 	Password      string
@@ -229,17 +240,15 @@ func (c *Client) allTagsWithRepo(repo, baseName string) ([]string, error) {
 }
 
 func mediaTypeSupported(mbs []byte) bool {
-	meta := struct {
-		MediaType     string      `json:"mediaType"`
-		SchemaVersion int         `json:"schemaVersion"`
-		Signatures    interface{} `json:"signatures"`
-	}{}
+	meta := &Manifest{}
 	if err := jsoniter.Unmarshal(mbs, &meta); err != nil {
 		return false
 	}
 	if err := manifest.SupportedSchema2MediaType(meta.MediaType); err != nil {
 		return false
 	}
-
+	if err := manifest.SupportedSchema2MediaType(meta.Config.MediaType); err != nil {
+		return false
+	}
 	return true
 }

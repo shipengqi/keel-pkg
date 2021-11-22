@@ -247,8 +247,10 @@ func mediaTypeSupported(mbs []byte) bool {
 	if err := manifest.SupportedSchema2MediaType(meta.MediaType); err != nil {
 		return false
 	}
-	if err := manifest.SupportedSchema2MediaType(meta.Config.MediaType); err != nil {
-		return false
+	if meta.Config != nil && meta.Config.MediaType != "" {
+		if err := manifest.SupportedSchema2MediaType(meta.Config.MediaType); err != nil {
+			return false
+		}
 	}
 	return true
 }
